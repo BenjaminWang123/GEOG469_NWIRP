@@ -1,0 +1,358 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report an Impact</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+
+    <div class="logo-wrap">
+      <div class="logo-main">NWIRP</div>
+      <div class="logo-divider"></div>
+      <div class="logo-sub">Northwest Immigrant<br>Rights Project</div>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a class="active" href="report.html">Report an Impact</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="resources.html">Resources</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+
+    <a href="#" class="support-btn">Support Our Work</a>
+
+  </nav>
+
+  <!-- Fullscreen Map Layout -->
+  <main class="report-page-layout">
+
+    <!-- Left Floating Panel -->
+    <aside class="floating-panel left-panel">
+
+      <div class="panel-header">
+        <h2>Report an Impact</h2>
+        <button class="close-btn">×</button>
+      </div>
+
+      <p class="panel-description">
+        Help us understand what is happening in immigrant communities across Washington State.
+      </p>
+
+      <div class="report-methods">
+
+        <div class="method-card active-method">
+          <div class="method-icon">📍</div>
+
+          <div>
+            <h4>Click on the Map</h4>
+            <p>
+              Select a location directly on the map and begin reporting.
+            </p>
+          </div>
+        </div>
+
+        <div class="method-card">
+          <div class="method-icon">🏠</div>
+
+          <div>
+            <h4>Enter an Address</h4>
+            <p>
+              Type an address and the map will help locate it.
+            </p>
+          </div>
+        </div>
+
+        <div class="method-card">
+          <div class="method-icon">🎯</div>
+
+          <div>
+            <h4>Use My Location</h4>
+            <p>
+              Use your current device location to report nearby activity.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="info-card">
+        <h4>🔒 Your Privacy Matters</h4>
+
+        <p>
+          Reports remain confidential and are never shared with immigration enforcement.
+        </p>
+      </div>
+
+    </aside>
+
+    <!-- Fullscreen Map -->
+    <section class="map-container-fullscreen">
+
+      <div class="map-toolbar">
+        <div class="toolbar-pill active-pill">
+          Zoom in to see individual reports
+        </div>
+
+        <div class="toolbar-pill">
+          Zoom out to see reports aggregated by county
+        </div>
+      </div>
+
+      <div id="map"></div>
+
+      <div class="map-legend">
+
+        <h5>Map Legend</h5>
+
+        <div class="legend-item">
+          <span class="legend-point"></span>
+          <p>Individual Reports</p>
+        </div>
+
+        <div class="legend-item">
+          <span class="legend-circle"></span>
+          <p>County Aggregation</p>
+        </div>
+
+      </div>
+
+      <div class="map-help-box">
+        <strong>How it works</strong>
+        <p>
+          Zoom in to view individual reports. Zoom out to view county-level aggregation.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- Right Reporting Panel -->
+    <aside class="floating-panel right-panel">
+
+      <div class="panel-header">
+        <h2>Report an Incident</h2>
+        <button class="close-btn">×</button>
+      </div>
+
+      <form class="incident-form">
+
+        <div class="form-section">
+
+          <label>Location</label>
+
+          <div class="location-box">
+            <strong>Selected on map</strong>
+            <p>47.6062° N, 122.3321° W</p>
+            <small>Seattle, King County, WA</small>
+          </div>
+
+        </div>
+
+        <div class="form-section">
+
+          <label>Incident Type</label>
+
+          <select>
+            <option>Select incident type</option>
+            <option>ICE Presence</option>
+            <option>Detention</option>
+            <option>Traffic Stop</option>
+            <option>Surveillance Activity</option>
+            <option>Family Separation Concern</option>
+          </select>
+
+        </div>
+
+        <div class="form-row">
+          <input type="date">
+          <input type="time">
+        </div>
+
+        <div class="form-section">
+
+          <label>Description</label>
+
+          <textarea placeholder="Describe what happened..."></textarea>
+
+        </div>
+
+        <div class="form-section">
+
+          <label>Upload Photos (Optional)</label>
+
+          <div class="upload-box">
+            <div class="upload-icon">☁️</div>
+            <p>Drag & drop images here</p>
+            <small>or click to browse</small>
+          </div>
+
+          <div class="image-preview-grid">
+            <div class="preview-image"></div>
+            <div class="preview-image"></div>
+            <div class="preview-image"></div>
+          </div>
+
+        </div>
+
+        <div class="form-section">
+
+          <label>Additional Information</label>
+
+          <textarea placeholder="Additional notes..."></textarea>
+
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-btn">Cancel</button>
+          <button type="submit" class="submit-btn">Submit Report</button>
+        </div>
+
+      </form>
+
+    </aside>
+
+  </main>
+
+  <!-- Recent Reports -->
+  <section class="recent-reports-section">
+
+    <div class="section-top">
+      <div>
+        <h2>📍 Recent Reports</h2>
+        <p>Latest community alerts in your area</p>
+      </div>
+
+      <div class="search-controls">
+        <input type="text" placeholder="Search by address, city, or keyword...">
+        <button>Newest First</button>
+      </div>
+    </div>
+
+    <div class="reports-grid">
+
+      <article class="report-card">
+        <div class="report-image"></div>
+        <div class="report-content">
+          <h4>4863 Buford Hwy NE, Chamblee, GA</h4>
+          <small>2 hours ago</small>
+          <p>
+            What appeared to be a targeted ICE encounter involving multiple vehicles.
+          </p>
+          <div class="report-tags">
+            <span>Immigration Enforcement</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="report-card">
+        <div class="report-image"></div>
+        <div class="report-content">
+          <h4>72027 Dinah Shore Dr, Rancho Mirage</h4>
+          <small>5 hours ago</small>
+          <p>
+            Reported detention activity involving a family vehicle stop.
+          </p>
+          <div class="report-tags">
+            <span>Family Detention</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="report-card">
+        <div class="report-image"></div>
+        <div class="report-content">
+          <h4>1250 S Sunkist St, Anaheim</h4>
+          <small>1 day ago</small>
+          <p>
+            Community member observed multiple ICE vehicles nearby.
+          </p>
+          <div class="report-tags">
+            <span>ICE Presence</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="report-card">
+        <div class="report-image"></div>
+        <div class="report-content">
+          <h4>S Main St, Petal, MS</h4>
+          <small>3 days ago</small>
+          <p>
+            ICE activity observed near residential neighborhood entrance.
+          </p>
+          <div class="report-tags">
+            <span>Door-to-Door Activity</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+  </section>
+
+  <!-- Rights & Safety -->
+  <section class="rights-section">
+
+    <article class="rights-card">
+      <h3>What To Do If You Encounter ICE Activity</h3>
+
+      <ul>
+        <li>Stay calm and do not run</li>
+        <li>Do not open the door unless there is a signed warrant</li>
+        <li>Document what you safely can</li>
+        <li>Report incidents to help protect communities</li>
+      </ul>
+
+      <a href="#">Learn More Safety Tips →</a>
+    </article>
+
+    <article class="rights-card">
+      <h3>What Should You Report?</h3>
+
+      <ul>
+        <li>ICE sightings or presence</li>
+        <li>Raids, arrests, or detentions</li>
+        <li>Surveillance or suspicious activity</li>
+        <li>Traffic stops or checkpoints</li>
+      </ul>
+
+      <a href="#">Learn More About Reporting →</a>
+    </article>
+
+    <article class="rights-card">
+      <h3>Know Your Rights</h3>
+
+      <ul>
+        <li>You have the right to remain silent</li>
+        <li>You have the right to speak to a lawyer</li>
+        <li>You have the right to refuse consent to searches</li>
+        <li>You are protected by the Constitution</li>
+      </ul>
+
+      <a href="#">Know All Your Rights →</a>
+    </article>
+
+  </section>
+
+  <footer>
+    <p>
+      Your privacy and safety are our priority. All reports remain confidential.
+    </p>
+  </footer>
+
+  <script src="js/map.js"></script>
+  <script src="js/report.js"></script>
+
+</body>
+</html>

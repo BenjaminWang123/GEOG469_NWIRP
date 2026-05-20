@@ -155,6 +155,14 @@ select {
   max-height: 560px;
   object-fit: contain;
   z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: block;
+  width: 85%;
+  max-width: 520px;
+  height: auto;
+  object-fit: contain;
 }
 
 .photo-shape {

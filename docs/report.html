@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +9,7 @@
 
   <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet">
   <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 </head>
 <body>
 
@@ -25,6 +25,7 @@
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a class="active" href="report.html">Report an Impact</a></li>
+      <li><a href="blog.html">Blog</a></li>
       <li><a href="dashboard.html">Dashboard</a></li>
       <li><a href="resources.html">Resources</a></li>
       <li><a href="about.html">About</a></li>
@@ -34,6 +35,18 @@
     <a href="#" class="support-btn">Support Our Work</a>
 
   </nav>
+
+  <!-- Confidentiality Disclaimer -->
+  <section class="report-disclaimer-banner">
+    <div class="disclaimer-icon">🔒</div>
+
+    <div class="disclaimer-text">
+      <h2>Confidentiality & Safety Notice</h2>
+      <p>
+        Information submitted through this platform will be kept confidential. It will not be shared with immigration enforcement, police, courts, or other legal agencies. Reports are collected only for Northwest Immigrant Rights Project research, advocacy, and community support purposes. For safety, please only provide approximate location information such as county, city, or general area. Do not submit a full street address or exact home address.
+      </p>
+    </div>
+  </section>
 
   <!-- Fullscreen Map Layout -->
   <main class="report-page-layout">
@@ -46,69 +59,48 @@
         <button class="close-btn">×</button>
       </div>
 
-      <p class="panel-description">
-        Help us understand what is happening in immigrant communities across Washington State.
-      </p>
-
       <div class="report-methods">
 
-        <div class="method-card active-method">
+        <div class="method-card" data-method="map-click">
           <div class="method-icon">📍</div>
 
           <div>
             <h4>Click on the Map</h4>
             <p>
-              Select a location directly on the map and begin reporting.
+              Select an approximate area on the map. The system will only store county-level location.
             </p>
           </div>
         </div>
 
-        <div class="method-card">
+        <div class="method-card" data-method="county-input">
           <div class="method-icon">🏠</div>
 
           <div>
-            <h4>Enter an Address</h4>
+            <h4>Enter County or General Area</h4>
             <p>
-              Type an address and the map will help locate it.
+              Type a county, city, or public area. Do not enter a full street address.
             </p>
           </div>
         </div>
 
-        <div class="method-card">
+        <div class="method-card" data-method="current-location">
           <div class="method-icon">🎯</div>
 
           <div>
-            <h4>Use My Location</h4>
+            <h4>Use My General Location</h4>
             <p>
-              Use your current device location to report nearby activity.
+              Use your device location only to estimate county or general area. Exact location will not be stored.
             </p>
           </div>
         </div>
 
-      </div>
-
-      <div class="info-card">
-        <h4>🔒 Your Privacy Matters</h4>
-
-        <p>
-          Reports remain confidential and are never shared with immigration enforcement.
-        </p>
       </div>
 
     </aside>
 
     <!-- Fullscreen Map -->
     <section class="map-container-fullscreen">
-
-      <div class="map-toolbar">
-        <div class="toolbar-pill active-pill">
-          Zoom in to see individual reports
-        </div>
-
-        <div class="toolbar-pill">
-          Zoom out to see reports aggregated by county
-        </div>
-      </div>
+      <button id="recenter-map-btn" class="recenter-map-btn">Recenter Washington</button>
 
       <div id="map"></div>
 
@@ -138,7 +130,7 @@
     </section>
 
     <!-- Right Reporting Panel -->
-    <aside class="floating-panel right-panel">
+    <aside class="floating-panel right-panel hidden-panel" id="incident-panel">
 
       <div class="panel-header">
         <h2>Report an Incident</h2>
@@ -149,27 +141,99 @@
 
         <div class="form-section">
 
-          <label>Location</label>
+          <label>Approximate Location</label>
 
           <div class="location-box">
-            <strong>Selected on map</strong>
-            <p>47.6062° N, 122.3321° W</p>
-            <small>Seattle, King County, WA</small>
+            <strong>Selected general area</strong>
+            <p id="selected-location-text">No county selected yet</p>
+            <small>Only county-level information will be collected. Exact street addresses are not stored.</small>
           </div>
+
+        </div>
+
+        <div class="form-section county-input-section" id="county-input-section">
+
+          <label>County</label>
+          <select id="county-select">
+            <option value="">Select a Washington county</option>
+            <option>Adams County</option>
+            <option>Asotin County</option>
+            <option>Benton County</option>
+            <option>Chelan County</option>
+            <option>Clallam County</option>
+            <option>Clark County</option>
+            <option>Columbia County</option>
+            <option>Cowlitz County</option>
+            <option>Douglas County</option>
+            <option>Ferry County</option>
+            <option>Franklin County</option>
+            <option>Garfield County</option>
+            <option>Grant County</option>
+            <option>Grays Harbor County</option>
+            <option>Island County</option>
+            <option>Jefferson County</option>
+            <option>King County</option>
+            <option>Kitsap County</option>
+            <option>Kittitas County</option>
+            <option>Klickitat County</option>
+            <option>Lewis County</option>
+            <option>Lincoln County</option>
+            <option>Mason County</option>
+            <option>Okanogan County</option>
+            <option>Pacific County</option>
+            <option>Pend Oreille County</option>
+            <option>Pierce County</option>
+            <option>San Juan County</option>
+            <option>Skagit County</option>
+            <option>Skamania County</option>
+            <option>Snohomish County</option>
+            <option>Spokane County</option>
+            <option>Stevens County</option>
+            <option>Thurston County</option>
+            <option>Wahkiakum County</option>
+            <option>Walla Walla County</option>
+            <option>Whatcom County</option>
+            <option>Whitman County</option>
+            <option>Yakima County</option>
+          </select>
+          <small class="field-note">You may change the county if the automatic selection is not correct.</small>
 
         </div>
 
         <div class="form-section">
 
           <label>Incident Type</label>
-
-          <select>
-            <option>Select incident type</option>
-            <option>ICE Presence</option>
-            <option>Detention</option>
-            <option>Traffic Stop</option>
-            <option>Surveillance Activity</option>
-            <option>Family Separation Concern</option>
+          <select id="incident-type-select">
+            <option value="">Select incident type</option>
+            <optgroup label="Economic Impacts">
+              <option>Missed work or lost wages</option>
+              <option>Workplace absence due to enforcement fear</option>
+              <option>Business disruption</option>
+              <option>Transportation disruption affecting work</option>
+              <option>Housing or rent instability</option>
+            </optgroup>
+            <optgroup label="Health Impacts">
+              <option>Missed medical appointment</option>
+              <option>Avoided clinic, hospital, or pharmacy</option>
+              <option>Mental health stress or fear</option>
+              <option>Delayed emergency care</option>
+              <option>Difficulty accessing health services</option>
+            </optgroup>
+            <optgroup label="Education Impacts">
+              <option>Student missed school</option>
+              <option>Parent avoided school pickup/dropoff</option>
+              <option>Interrupted ESL or adult education</option>
+              <option>School event or program disruption</option>
+              <option>Fear affecting student attendance</option>
+            </optgroup>
+            <optgroup label="Social Stability / Safety">
+              <option>ICE presence or sighting</option>
+              <option>Raid, arrest, or detention</option>
+              <option>Checkpoint or traffic stop</option>
+              <option>Surveillance or suspicious activity</option>
+              <option>Community fear or avoidance of public spaces</option>
+              <option>Other community impact</option>
+            </optgroup>
           </select>
 
         </div>
@@ -213,9 +277,20 @@
 
         </div>
 
+        <div class="form-section privacy-confirmation-box">
+
+          <label class="privacy-check-label">
+            <input type="checkbox" id="privacy-confirmation-check">
+            <span>
+              I understand that my report will be kept confidential and used only for NWIRP-related advocacy, research, and community support. I also understand that I should not submit a detailed home address or personally identifying location.
+            </span>
+          </label>
+
+        </div>
+
         <div class="form-actions">
           <button type="button" class="cancel-btn">Cancel</button>
-          <button type="submit" class="submit-btn">Submit Report</button>
+          <button type="submit" class="submit-btn" id="submit-report-btn" disabled>Submit Report</button>
         </div>
 
       </form>
@@ -224,79 +299,36 @@
 
   </main>
 
-  <!-- Recent Reports -->
-  <section class="recent-reports-section">
+  <!-- Blog Preview -->
+  <section class="report-blog-preview-section">
 
     <div class="section-top">
       <div>
-        <h2>📍 Recent Reports</h2>
-        <p>Latest community alerts in your area</p>
+        <h2>Recent Community Reports</h2>
+        <p>Preview of recent anonymized reports. Visit the blog page to review more detailed community reports.</p>
       </div>
 
-      <div class="search-controls">
-        <input type="text" placeholder="Search by address, city, or keyword...">
-        <button>Newest First</button>
-      </div>
+      <a class="view-blog-btn" href="blog.html">View All Reports</a>
     </div>
 
-    <div class="reports-grid">
-
-      <article class="report-card">
-        <div class="report-image"></div>
-        <div class="report-content">
-          <h4>4863 Buford Hwy NE, Chamblee, GA</h4>
-          <small>2 hours ago</small>
-          <p>
-            What appeared to be a targeted ICE encounter involving multiple vehicles.
-          </p>
-          <div class="report-tags">
-            <span>Immigration Enforcement</span>
-          </div>
-        </div>
+    <div class="report-preview-row">
+      <article class="mini-report-card">
+        <span class="tag economic">Economic</span>
+        <h4>Worker missed shifts after enforcement activity nearby</h4>
+        <p>King County · 2 hours ago</p>
       </article>
 
-      <article class="report-card">
-        <div class="report-image"></div>
-        <div class="report-content">
-          <h4>72027 Dinah Shore Dr, Rancho Mirage</h4>
-          <small>5 hours ago</small>
-          <p>
-            Reported detention activity involving a family vehicle stop.
-          </p>
-          <div class="report-tags">
-            <span>Family Detention</span>
-          </div>
-        </div>
+      <article class="mini-report-card">
+        <span class="tag health">Health</span>
+        <h4>Clinic appointment missed due to fear of travel</h4>
+        <p>Yakima County · 1 day ago</p>
       </article>
 
-      <article class="report-card">
-        <div class="report-image"></div>
-        <div class="report-content">
-          <h4>1250 S Sunkist St, Anaheim</h4>
-          <small>1 day ago</small>
-          <p>
-            Community member observed multiple ICE vehicles nearby.
-          </p>
-          <div class="report-tags">
-            <span>ICE Presence</span>
-          </div>
-        </div>
+      <article class="mini-report-card">
+        <span class="tag education">Education</span>
+        <h4>Student attendance disruption after neighborhood activity</h4>
+        <p>Pierce County · 3 days ago</p>
       </article>
-
-      <article class="report-card">
-        <div class="report-image"></div>
-        <div class="report-content">
-          <h4>S Main St, Petal, MS</h4>
-          <small>3 days ago</small>
-          <p>
-            ICE activity observed near residential neighborhood entrance.
-          </p>
-          <div class="report-tags">
-            <span>Door-to-Door Activity</span>
-          </div>
-        </div>
-      </article>
-
     </div>
 
   </section>

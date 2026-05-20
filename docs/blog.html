@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Reports Blog</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-main">NWIRP</div>
+      <div class="logo-divider"></div>
+      <div class="logo-sub">Northwest Immigrant<br>Rights Project</div>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="report.html">Report an Impact</a></li>
+      <li><a class="active" href="blog.html">Blog</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="resources.html">Resources</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+
+    <a href="report.html" class="support-btn">Report Now</a>
+  </nav>
+
+  <header class="blog-hero">
+    <p class="eyebrow">Community Reports</p>
+    <h1>Reported Community Impacts</h1>
+    <p>
+      This page displays submitted community reports in a blog-style format. Reports can be filtered by county, impact category, date, and keyword.
+    </p>
+  </header>
+
+  <section class="blog-filter-section">
+    <div class="blog-filter-card">
+      <h3>Filter Reports</h3>
+
+      <div class="filter-grid">
+        <input type="text" placeholder="Search keyword, city, or county...">
+
+        <select>
+          <option>All Counties</option>
+          <option>King County</option>
+          <option>Pierce County</option>
+          <option>Snohomish County</option>
+          <option>Yakima County</option>
+        </select>
+
+        <select>
+          <option>All Impact Areas</option>
+          <option>Economic</option>
+          <option>Health</option>
+          <option>Education</option>
+          <option>Social Stability</option>
+        </select>
+
+        <select>
+          <option>Newest First</option>
+          <option>Oldest First</option>
+          <option>Most Recent Week</option>
+          <option>Most Recent Month</option>
+        </select>
+      </div>
+
+      <div class="category-tabs">
+        <button class="active-tab">All</button>
+        <button>Economic</button>
+        <button>Health</button>
+        <button>Education</button>
+        <button>Social Stability</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="blog-list-section">
+
+    <div class="blog-box-grid">
+
+      <article class="blog-box economic-box">
+        <div class="blog-box-header">
+          <span class="tag economic">Economic</span>
+          <small>King County · 2 hours ago</small>
+        </div>
+        <h2>Worker missed shifts after enforcement activity nearby</h2>
+        <p>A community member reported that several workers avoided going to work after hearing about immigration enforcement activity near a transit stop. The report suggests possible impacts on job attendance, wages, and workplace stability.</p>
+        <div class="blog-box-footer">
+          <span>Approximate Area: King County</span>
+          <a href="report.html">View on Map →</a>
+        </div>
+      </article>
+
+      <article class="blog-box health-box">
+        <div class="blog-box-header">
+          <span class="tag health">Health</span>
+          <small>Yakima County · 1 day ago</small>
+        </div>
+        <h2>Clinic appointment missed due to fear of travel</h2>
+        <p>A report described a family delaying healthcare access because they were afraid to travel through an area where enforcement activity had been reported. This may reflect broader barriers to healthcare access during enforcement events.</p>
+        <div class="blog-box-footer">
+          <span>Approximate Area: Yakima County</span>
+          <a href="report.html">View on Map →</a>
+        </div>
+      </article>
+
+      <article class="blog-box education-box">
+        <div class="blog-box-header">
+          <span class="tag education">Education</span>
+          <small>Pierce County · 3 days ago</small>
+        </div>
+        <h2>Student attendance disruption after neighborhood activity</h2>
+        <p>A community member reported that students stayed home from school after enforcement-related activity was observed near a residential area. This report is categorized as an education-related community impact.</p>
+        <div class="blog-box-footer">
+          <span>Approximate Area: Pierce County</span>
+          <a href="report.html">View on Map →</a>
+        </div>
+      </article>
+
+      <article class="blog-box social-box">
+        <div class="blog-box-header">
+          <span class="tag social">Social Stability</span>
+          <small>Snohomish County · 4 days ago</small>
+        </div>
+        <h2>Community members avoided public spaces after reported activity</h2>
+        <p>A report described reduced community activity near stores, parks, and transit areas after enforcement-related rumors circulated online. This report reflects changes in social behavior and community safety perceptions.</p>
+        <div class="blog-box-footer">
+          <span>Approximate Area: Snohomish County</span>
+          <a href="report.html">View on Map →</a>
+        </div>
+      </article>
+
+    </div>
+
+  </section>
+
+  <footer>
+    <p>Reports shown here are anonymized and displayed only at approximate county or area level.</p>
+  </footer>
+
+  <script src="js/blog.js"></script>
+
+</body>
+</html>

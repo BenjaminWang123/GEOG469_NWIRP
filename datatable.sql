@@ -1,12 +1,15 @@
+DROP TABLE IF EXISTS "tblImpactReports";
+
 CREATE TABLE "tblImpactReports" (
 
     id SERIAL PRIMARY KEY,
 
-    category TEXT,
-    event_date DATE,
-    county TEXT,
+    county TEXT NOT NULL,
+    incident_type TEXT NOT NULL,
     description TEXT,
-    email TEXT,
+    event_date DATE,
+    event_time TIME,
+    image_url TEXT,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 

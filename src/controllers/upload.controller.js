@@ -37,9 +37,13 @@ exports.uploadImage = async (req, res) => {
       .from("report-images")
       .getPublicUrl(fileName);
 
+    const imageUrl = data.publicUrl;
+
+    console.log("Public image URL:", imageUrl);
+
     return res.json({
       success: true,
-      image_url: data.publicUrl
+      image_url: imageUrl
     });
 
   } catch (err) {

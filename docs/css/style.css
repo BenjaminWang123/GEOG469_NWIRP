@@ -2137,3 +2137,132 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================
+   MOBILE RESPONSIVE DESIGN
+========================================= */
+
+@media screen and (max-width: 768px) {
+
+    /* NAVBAR */
+    .navbar,
+    .nav-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    /* HERO SECTION */
+    .hero,
+    .hero-container {
+        grid-template-columns: 1fr !important;
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem !important;
+        line-height: 1.1;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    /* MAP SECTION */
+    .map-container {
+        flex-direction: column;
+        height: auto !important;
+    }
+
+    #map {
+        height: 420px !important;
+        width: 100%;
+    }
+
+    /* REPORT SIDEBAR */
+    .report-panel,
+    .report-sidebar,
+    .map-sidebar {
+        width: 100% !important;
+        max-width: 100%;
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    /* DASHBOARD CARDS */
+    .dashboard-grid,
+    .stats-grid,
+    .cards-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* BLOG FILTERS */
+    .filter-bar,
+    .filter-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+        width: 100%;
+    }
+
+    /* CHARTS */
+    canvas {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    /* BUTTONS */
+    .btn,
+    button {
+        width: 100%;
+    }
+
+    /* TEXT */
+    h1 {
+        font-size: 2rem !important;
+    }
+
+    h2 {
+        font-size: 1.6rem !important;
+    }
+
+    h3 {
+        font-size: 1.2rem !important;
+    }
+
+    p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* ABOUT + RESOURCE SECTIONS */
+    .about-grid,
+    .resource-grid,
+    .workflow-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* FOOTER */
+    footer {
+        text-align: center;
+        padding: 24px 16px;
+    }
+
+    /* IMAGES */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}

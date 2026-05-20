@@ -1,9 +1,11 @@
+
 const db = require('../config/database');
 
+// GET all reports
 exports.getReports = async (req, res) => {
   try {
     const response = await db.query(
-      'SELECT * FROM "tblimpactreports" ORDER BY created_at DESC'
+      'SELECT * FROM tblimpactreports ORDER BY created_at DESC'
     );
 
     res.status(200).send({
@@ -20,10 +22,12 @@ exports.getReports = async (req, res) => {
   }
 };
 
+// POST a new report
 exports.addReport = async (req, res) => {
   try {
     let {
       county,
+      impact_area,
       incident_type,
       description,
       event_date,
@@ -38,17 +42,18 @@ exports.addReport = async (req, res) => {
       });
     }
 
+    impact_area = impact_area || null;
+    description = description || null;
     event_date = event_date || null;
     event_time = event_time || null;
-    description = description || null;
     image_url = image_url || null;
 
     const response = await db.query(
-      `INSERT INTO "tblimpactreports"
-        (county, incident_type, description, event_date, event_time, image_url)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO tblimpactreports
+        (county, impact_area, incident_type, description, event_date, event_time, image_url)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [county, incident_type, description, event_date, event_time, image_url]
+      [county, impact_area, incident_type, description, event_date, event_time, image_url]
     );
 
     res.status(201).send({

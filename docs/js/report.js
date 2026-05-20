@@ -10,6 +10,25 @@
   const countySelect = document.getElementById('county-select');
   const incidentTypeSelect = document.getElementById('incident-type-select');
   const imageInput = document.getElementById('incident-image');
+  const selectedImageName = document.getElementById('selected-image-name');
+  const imagePreview = document.getElementById('image-preview');
+
+  if (imageInput) {
+    imageInput.addEventListener('change', () => {
+      const file = imageInput.files[0];
+
+      if (!file) {
+        selectedImageName.textContent = 'No image selected';
+        imagePreview.classList.add('hidden-panel');
+        imagePreview.src = '';
+        return;
+      }
+
+      selectedImageName.textContent = `Selected: ${file.name}`;
+      imagePreview.src = URL.createObjectURL(file);
+      imagePreview.classList.remove('hidden-panel');
+    });
+  }
 
   function getImpactAreaFromIncidentType(incidentType) {
     const economicTypes = [

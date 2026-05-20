@@ -253,8 +253,6 @@
 
         <div class="form-section">
 
-          <label>Upload Photos (Optional)</label>
-
           <label class="upload-box" for="incident-image">
             <div class="upload-icon">☁️</div>
             <p>Upload an Image</p>
@@ -265,6 +263,16 @@
               id="incident-image"
               accept="image/*"
               hidden
+            >
+
+            <p id="selected-image-name" class="selected-image-name">
+              No image selected
+            </p>
+
+            <img
+              id="image-preview"
+              class="image-preview hidden-panel"
+              alt="Selected image preview"
             >
           </label>
 

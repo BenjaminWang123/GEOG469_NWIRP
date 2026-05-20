@@ -147,28 +147,6 @@ select {
   position: relative;
 }
 
-.hero-main-image {
-  position: absolute;
-  left: 70px;
-  bottom: 0;
-  width: 560px;
-  max-height: 560px;
-  object-fit: contain;
-  z-index: 5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  display: block;
-  width: 85%;
-  max-width: 520px;
-  height: auto;
-  object-fit: contain;
-}
-
-.photo-shape {
-  background: linear-gradient(135deg, #251f4f, #006c70);
-}
-
 .hero-art {
   position: relative;
 }
@@ -220,6 +198,14 @@ select {
   font-weight: 900;
   text-align: center;
   letter-spacing: 2px;
+}
+
+.hero-main-image {
+  width: 125%;
+  height: 125%;
+  object-fit: cover;
+  object-position: left center;
+  transform: translate(-55px, -20px);
 }
 
 .hero-text {

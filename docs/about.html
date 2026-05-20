@@ -2,21 +2,238 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>About</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About the Project</title>
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<nav>
-  <h2>NWIRP Impact Platform</h2>
-</nav>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-main">NWIRP</div>
+      <div class="logo-divider"></div>
+      <div class="logo-sub">Northwest Immigrant<br>Rights Project</div>
+    </div>
 
-<section class="placeholder">
-  <h1>About the Project</h1>
-  <p>
-    Future implementation: methodology, workflow, and project team.
-  </p>
-</section>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="report.html">Report an Impact</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="resources.html">Resources</a></li>
+      <li><a class="active" href="about.html">About</a></li>
+    </ul>
+
+    <a href="report.html" class="support-btn">Report Now</a>
+  </nav>
+
+  <header class="about-hero">
+    <p class="eyebrow">About This Project</p>
+    <h1>Mapping Community Impacts Across Washington</h1>
+    <p>
+      This platform is a county-level civic data and GIS reporting prototype created to help Northwest Immigrant Rights Project understand how immigration enforcement activity affects immigrant communities across Washington State.
+    </p>
+  </header>
+
+  <main class="about-page">
+
+    <section class="about-intro-grid">
+      <article class="about-card large-about-card">
+        <h2>What Is This Project About?</h2>
+        <p>
+          This project documents the broader community impacts connected to immigration enforcement activity. Instead of only mapping where enforcement activity happens, the platform focuses on how people’s daily lives may be affected afterward, including work, healthcare, school attendance, transportation, public space use, and community stability.
+        </p>
+        <p>
+          Community members can submit confidential, anonymized reports through the reporting portal. The system stores reports at the county level only, which helps protect privacy while still allowing NWIRP and community advocates to identify patterns across Washington State.
+        </p>
+      </article>
+
+      <article class="about-card highlight-about-card">
+        <h3>Project Goal</h3>
+        <p>
+          Build a privacy-first reporting and visualization platform that transforms community experiences into maps, dashboard summaries, and advocacy-ready insights.
+        </p>
+      </article>
+    </section>
+
+    <section class="about-section">
+      <div class="section-heading-block">
+        <p class="eyebrow">Methodology</p>
+        <h2>How We Approach the Project</h2>
+        <p>
+          The project combines participatory GIS, community reporting, web mapping, and database-driven visualization. The platform is designed around privacy, accessibility, and useful county-level aggregation rather than exact-location tracking.
+        </p>
+      </div>
+
+      <div class="methodology-grid">
+        <article class="method-card-about">
+          <span>01</span>
+          <h3>Privacy-First Reporting</h3>
+          <p>Users select a county or general area instead of submitting exact street addresses or home locations.</p>
+        </article>
+
+        <article class="method-card-about">
+          <span>02</span>
+          <h3>Impact Categorization</h3>
+          <p>Each report is automatically categorized as economic, health, education, or social stability based on the selected incident type.</p>
+        </article>
+
+        <article class="method-card-about">
+          <span>03</span>
+          <h3>County-Level GIS</h3>
+          <p>Washington county boundaries are used to support map interaction, county selection, aggregation, and choropleth visualization.</p>
+        </article>
+
+        <article class="method-card-about">
+          <span>04</span>
+          <h3>Analytics Dashboard</h3>
+          <p>Reports are summarized by county, impact area, incident type, and time to identify broader community patterns.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="workflow-section">
+      <div class="section-heading-block">
+        <p class="eyebrow">Workflow</p>
+        <h2>Project Workflow</h2>
+      </div>
+
+      <div class="workflow-timeline">
+        <div class="workflow-step">
+          <span>1</span>
+          <div>
+            <h3>User Selects a County</h3>
+            <p>A user clicks a Washington county on the map, chooses from a county dropdown, or uses general location detection to estimate their county.</p>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <span>2</span>
+          <div>
+            <h3>Report Form Is Completed</h3>
+            <p>The user selects an incident type, optional date/time, and a general description. The form reminds users not to submit exact home addresses.</p>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <span>3</span>
+          <div>
+            <h3>Backend Stores the Report</h3>
+            <p>The frontend sends the report to an Express API, which inserts the record into a PostgreSQL database hosted through Supabase.</p>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <span>4</span>
+          <div>
+            <h3>Data Becomes Visual</h3>
+            <p>The submitted report appears in the map aggregation, blog page, and dashboard analytics after it is stored.</p>
+          </div>
+        </div>
+
+        <div class="workflow-step">
+          <span>5</span>
+          <div>
+            <h3>Patterns Support Advocacy</h3>
+            <p>Aggregated results can help identify where communities are experiencing economic, health, educational, and social impacts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section two-column-resource">
+      <div>
+        <p class="eyebrow">Data Collection</p>
+        <h2>What Data Is Collected?</h2>
+        <p>
+          The platform collects only the information needed for county-level analysis and community impact documentation. Reports should avoid personally identifying details or exact addresses.
+        </p>
+      </div>
+
+      <div class="report-checklist">
+        <div class="check-item">Washington county or general area</div>
+        <div class="check-item">Incident type selected by the user</div>
+        <div class="check-item">Automatically assigned impact area</div>
+        <div class="check-item">Optional event date and time</div>
+        <div class="check-item">Optional general description</div>
+        <div class="check-item">Optional image upload for future development</div>
+      </div>
+    </section>
+
+    <section class="about-section tech-stack-section">
+      <div class="section-heading-block">
+        <p class="eyebrow">Technical Design</p>
+        <h2>Platform Architecture</h2>
+        <p>
+          The platform uses a full-stack web mapping structure: static frontend pages, a Node/Express backend, a PostgreSQL database, and Washington county GeoJSON for GIS visualization.
+        </p>
+      </div>
+
+      <div class="tech-stack-grid">
+        <div class="tech-card">HTML / CSS / JavaScript</div>
+        <div class="tech-card">MapLibre + OpenStreetMap</div>
+        <div class="tech-card">Node.js / Express API</div>
+        <div class="tech-card">Supabase PostgreSQL</div>
+        <div class="tech-card">Render Deployment</div>
+        <div class="tech-card">Washington County GeoJSON</div>
+      </div>
+    </section>
+
+    <section class="about-section team-section">
+      <div class="section-heading-block">
+        <p class="eyebrow">Project Team</p>
+        <h2>Team Members</h2>
+        <p>
+          This project was developed as a GIS Workshop project at the University of Washington in collaboration with Northwest Immigrant Rights Project.
+        </p>
+      </div>
+
+      <div class="team-grid">
+        <article class="team-card">
+          <div class="team-avatar">BW</div>
+          <h3>Benni Wang</h3>
+          <p>GIS web mapping, frontend design, backend API integration, database connection, deployment, and dashboard development.</p>
+        </article>
+
+        <article class="team-card placeholder-team-card">
+          <div class="team-avatar">TM</div>
+          <h3>Team Member</h3>
+          <p>Add teammate name, role, and contribution here.</p>
+        </article>
+
+        <article class="team-card placeholder-team-card">
+          <div class="team-avatar">TM</div>
+          <h3>Team Member</h3>
+          <p>Add teammate name, role, and contribution here.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="contact-section-about">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h2>Contact Information</h2>
+        <p>
+          For project-related questions, contact the student project team. For legal assistance, immigration support, or urgent community needs, please contact Northwest Immigrant Rights Project through their official website.
+        </p>
+      </div>
+
+      <div class="contact-card-about">
+        <h3>Project Contact</h3>
+        <p><strong>Email:</strong> benj91zc@gmail.com</p>
+        <p><strong>Course:</strong> GEOG 469 GIS Workshop</p>
+        <p><strong>Sponsor:</strong> Northwest Immigrant Rights Project</p>
+        <p><strong>Purpose:</strong> Community impact reporting and GIS analysis</p>
+        <a href="resources.html" class="btn-primary">View Resources</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>This project is for educational, research, and advocacy support purposes. It does not provide legal advice.</p>
+  </footer>
 
 </body>
 </html>

@@ -1092,6 +1092,273 @@ select {
 }
 
 /* ========================================
+   ABOUT PAGE
+======================================== */
+
+.about-hero {
+  background: radial-gradient(circle at 90% 15%, rgba(240,74,35,0.22), transparent 30%),
+              linear-gradient(135deg, #101525, #004b4e);
+  color: white;
+  padding: 82px 60px;
+}
+
+.about-hero h1 {
+  font-size: 54px;
+  line-height: 1.08;
+  max-width: 820px;
+  margin-bottom: 20px;
+}
+
+.about-hero p {
+  max-width: 800px;
+  color: rgba(255,255,255,0.78);
+  font-size: 18px;
+}
+
+.about-page {
+  background: #090b0f;
+  color: white;
+}
+
+.about-intro-grid {
+  padding: 70px 60px 30px;
+  display: grid;
+  grid-template-columns: 1.5fr 0.8fr;
+  gap: 24px;
+}
+
+.about-card {
+  background: var(--dark-card);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 22px;
+  padding: 34px;
+  box-shadow: var(--shadow-dark);
+}
+
+.large-about-card h2,
+.about-section h2,
+.workflow-section h2,
+.contact-section-about h2 {
+  font-size: 36px;
+  margin-bottom: 16px;
+}
+
+.large-about-card p,
+.highlight-about-card p,
+.about-section p,
+.workflow-step p,
+.contact-section-about p {
+  color: rgba(255,255,255,0.68);
+}
+
+.large-about-card p + p {
+  margin-top: 14px;
+}
+
+.highlight-about-card {
+  background: linear-gradient(135deg, rgba(240,74,35,0.22), rgba(0,108,112,0.26));
+}
+
+.highlight-about-card h3 {
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+
+.about-section,
+.workflow-section {
+  padding: 70px 60px;
+}
+
+.methodology-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.method-card-about {
+  background: var(--dark-card);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 26px;
+  transition: 0.2s ease;
+}
+
+.method-card-about:hover {
+  transform: translateY(-4px);
+  border-color: rgba(240,74,35,0.35);
+}
+
+.method-card-about span {
+  display: inline-block;
+  color: var(--orange);
+  font-weight: 900;
+  margin-bottom: 14px;
+}
+
+.method-card-about h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.method-card-about p {
+  color: rgba(255,255,255,0.66);
+  font-size: 14px;
+}
+
+.workflow-timeline {
+  display: grid;
+  gap: 18px;
+  max-width: 980px;
+}
+
+.workflow-step {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 18px;
+  align-items: start;
+  background: var(--dark-card);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 22px;
+}
+
+.workflow-step span {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.workflow-step h3 {
+  font-size: 21px;
+  margin-bottom: 8px;
+}
+
+.tech-stack-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.tech-card {
+  background: linear-gradient(135deg, #111318, #181b22);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 20px;
+  font-weight: 800;
+  color: white;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.team-card {
+  background: var(--dark-card);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 28px;
+}
+
+.team-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 20px;
+  margin-bottom: 18px;
+}
+
+.team-card h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.team-card p {
+  color: rgba(255,255,255,0.66);
+}
+
+.placeholder-team-card {
+  opacity: 0.72;
+}
+
+.contact-section-about {
+  padding: 70px 60px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 28px;
+  background: #0d1117;
+}
+
+.contact-card-about {
+  background: white;
+  color: var(--navy);
+  border-radius: 22px;
+  padding: 30px;
+  box-shadow: var(--shadow-dark);
+}
+
+.contact-card-about h3 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.contact-card-about p {
+  color: #3f4652;
+  margin-bottom: 10px;
+}
+
+.contact-card-about .btn-primary {
+  display: inline-block;
+  margin-top: 16px;
+}
+
+@media (max-width: 1100px) {
+  .about-intro-grid,
+  .contact-section-about {
+    grid-template-columns: 1fr;
+  }
+
+  .methodology-grid,
+  .tech-stack-grid,
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .about-hero,
+  .about-intro-grid,
+  .about-section,
+  .workflow-section,
+  .contact-section-about {
+    padding: 40px 24px;
+  }
+
+  .about-hero h1 {
+    font-size: 38px;
+  }
+
+  .methodology-grid,
+  .tech-stack-grid,
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
    RESOURCES PAGE
 ======================================== */
 

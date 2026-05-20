@@ -243,7 +243,7 @@
 
   async function loadReportsFromDatabase() {
     try {
-      const response = await fetch('/api/get-reports');
+      const response = await fetch('https://geog469-nwirp-1rtx.onrender.com/api/get-reports');
       const result = await response.json();
 
       if (!response.ok || !result.success) {

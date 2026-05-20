@@ -69,7 +69,9 @@
   }
 
   function populateCountyFilter(rows) {
-    const counties = [...new Set(rows.map((report) => report.county).filter(Boolean))].sort();
+    const counties = [
+      ...new Set(rows.map((report) => report.county).filter(Boolean))
+    ].sort();
 
     counties.forEach((county) => {
       const option = document.createElement('option');
@@ -94,26 +96,40 @@
       ].join(' ').toLowerCase();
 
       const matchesKeyword = !keyword || searchableText.includes(keyword);
-      const matchesCounty = selectedCounty === 'All' || report.county === selectedCounty;
-      const matchesImpact = selectedImpact === 'All' || report.impact_area === selectedImpact;
+      const matchesCounty =
+        selectedCounty === 'All' || report.county === selectedCounty;
+      const matchesImpact =
+        selectedImpact === 'All' || report.impact_area === selectedImpact;
 
       return matchesKeyword && matchesCounty && matchesImpact;
     });
 
     if (sortFilter.value === 'newest') {
-      filtered.sort((a, b) => new Date(b.created_at || b.event_date || 0) - new Date(a.created_at || a.event_date || 0));
+      filtered.sort(
+        (a, b) =>
+          new Date(b.created_at || b.event_date || 0) -
+          new Date(a.created_at || a.event_date || 0)
+      );
     }
 
     if (sortFilter.value === 'oldest') {
-      filtered.sort((a, b) => new Date(a.created_at || a.event_date || 0) - new Date(b.created_at || b.event_date || 0));
+      filtered.sort(
+        (a, b) =>
+          new Date(a.created_at || a.event_date || 0) -
+          new Date(b.created_at || b.event_date || 0)
+      );
     }
 
     if (sortFilter.value === 'county') {
-      filtered.sort((a, b) => String(a.county || '').localeCompare(String(b.county || '')));
+      filtered.sort((a, b) =>
+        String(a.county || '').localeCompare(String(b.county || ''))
+      );
     }
 
     if (sortFilter.value === 'impact') {
-      filtered.sort((a, b) => String(a.impact_area || '').localeCompare(String(b.impact_area || '')));
+      filtered.sort((a, b) =>
+        String(a.impact_area || '').localeCompare(String(b.impact_area || ''))
+      );
     }
 
     return filtered;
@@ -122,7 +138,8 @@
   function renderReports() {
     const filteredReports = getFilteredReports();
 
-    resultSummary.textContent = `${filteredReports.length} report(s) shown from ${reports.length} total report(s).`;
+    resultSummary.textContent =
+      `${filteredReports.length} report(s) shown from ${reports.length} total report(s).`;
 
     if (!filteredReports.length) {
       blogList.innerHTML = `
@@ -134,33 +151,53 @@
       return;
     }
 
-    blogList.innerHTML = filteredReports.map((report) => {
-      const impactArea = report.impact_area || 'Social Stability';
-      const boxClass = getImpactClass(impactArea);
-      const tagClass = getTagClass(impactArea);
-      const title = generateBlogTitle(report);
-      const excerpt = generateBlogExcerpt(report);
+    blogList.innerHTML = filteredReports
+      .map((report) => {
+        const impactArea = report.impact_area || 'Social Stability';
+        const boxClass = getImpactClass(impactArea);
+        const tagClass = getTagClass(impactArea);
+        const title = generateBlogTitle(report);
+        const excerpt = generateBlogExcerpt(report);
 
-      return `
-        <article class="blog-box ${boxClass}">
-          <div>
-            <div class="blog-box-header">
-              <span class="tag ${tagClass}">${escapeHTML(impactArea)}</span>
-              <small>${escapeHTML(report.county || 'Unknown County')} · ${escapeHTML(formatDate(report.event_date || report.created_at))}</small>
+        return `
+          <article class="blog-box ${boxClass}">
+            <div>
+              <div class="blog-box-header">
+                <span class="tag ${tagClass}">
+                  ${escapeHTML(impactArea)}
+                </span>
+
+                <small>
+                  ${escapeHTML(report.county || 'Unknown County')} ·
+                  ${escapeHTML(formatDate(report.event_date || report.created_at))}
+                </small>
+              </div>
+
+              <h2>${escapeHTML(title)}</h2>
+
+              <p>${escapeHTML(excerpt)}</p>
+
+              ${
+                report.image_url
+                  ? `
+                    <img
+                      src="${escapeHTML(report.image_url)}"
+                      class="blog-report-image"
+                      alt="Uploaded report image"
+                    >
+                  `
+                  : ''
+              }
             </div>
 
-            <h2>${escapeHTML(title)}</h2>
-
-            <p>${escapeHTML(excerpt)}</p>
-          </div>
-
-          <div class="blog-box-footer">
-            <span>County-level report only</span>
-            <a href="report.html">View on Map →</a>
-          </div>
-        </article>
-      `;
-    }).join('');
+            <div class="blog-box-footer">
+              <span>County-level report only</span>
+              <a href="report.html">View on Map →</a>
+            </div>
+          </article>
+        `;
+      })
+      .join('');
   }
 
   function attachFilterEvents() {
@@ -173,7 +210,10 @@
       const button = event.target.closest('button');
       if (!button) return;
 
-      categoryTabs.querySelectorAll('button').forEach((tab) => tab.classList.remove('active-tab'));
+      categoryTabs
+        .querySelectorAll('button')
+        .forEach((tab) => tab.classList.remove('active-tab'));
+
       button.classList.add('active-tab');
 
       impactFilter.value = button.dataset.impact;
@@ -191,11 +231,14 @@
       }
 
       reports = result.rows || [];
+
       populateCountyFilter(reports);
       renderReports();
     } catch (error) {
       console.error(error);
+
       resultSummary.textContent = 'Unable to load reports.';
+
       blogList.innerHTML = `
         <div class="empty-blog-message">
           <h3>Unable to load reports</h3>

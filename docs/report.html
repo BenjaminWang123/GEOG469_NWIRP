@@ -255,17 +255,18 @@
 
           <label>Upload Photos (Optional)</label>
 
-          <div class="upload-box">
+          <label class="upload-box" for="incident-image">
             <div class="upload-icon">☁️</div>
-            <p>Drag & drop images here</p>
-            <small>or click to browse</small>
-          </div>
+            <p>Upload an Image</p>
+            <small>Click to browse. Optional.</small>
 
-          <div class="image-preview-grid">
-            <div class="preview-image"></div>
-            <div class="preview-image"></div>
-            <div class="preview-image"></div>
-          </div>
+            <input
+              type="file"
+              id="incident-image"
+              accept="image/*"
+              hidden
+            >
+          </label>
 
         </div>
 

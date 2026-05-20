@@ -1,8 +1,5 @@
 (() => {
-  // Same-domain deployment on Render can use an empty API base.
-  // For local testing with Live Server, use:
-  // const API_BASE = 'https://geog469-nwirp-1rtx.onrender.com';
-  const API_BASE = 'https://geog469-nwirp-1rtx.onrender.com';
+  const API_BASE = '';
 
   const form = document.querySelector('.incident-form');
   const privacyCheck = document.getElementById('privacy-confirmation-check');
@@ -12,6 +9,7 @@
   const selectedLocationText = document.getElementById('selected-location-text');
   const countySelect = document.getElementById('county-select');
   const incidentTypeSelect = document.getElementById('incident-type-select');
+  const imageInput = document.getElementById('incident-image');
 
   function getImpactAreaFromIncidentType(incidentType) {
     const economicTypes = [
@@ -53,6 +51,28 @@
     if (socialTypes.includes(incidentType)) return 'Social Stability';
 
     return null;
+  }
+
+  async function uploadImageIfSelected() {
+    if (!imageInput || imageInput.files.length === 0) {
+      return '';
+    }
+
+    const imageFormData = new FormData();
+    imageFormData.append('image', imageInput.files[0]);
+
+    const uploadResponse = await fetch(API_BASE + '/api/upload-image', {
+      method: 'POST',
+      body: imageFormData
+    });
+
+    const uploadResult = await uploadResponse.json();
+
+    if (!uploadResponse.ok || !uploadResult.success) {
+      throw new Error(uploadResult.error || 'Image upload failed.');
+    }
+
+    return uploadResult.image_url;
   }
 
   if (privacyCheck && submitButton) {
@@ -147,32 +167,37 @@
       const selectedIncidentType = incidentTypeSelect ? incidentTypeSelect.value : '';
       const impactArea = getImpactAreaFromIncidentType(selectedIncidentType);
 
-      const report = {
-        county: countySelect ? countySelect.value : '',
-        impact_area: impactArea,
-        incident_type: selectedIncidentType,
-        description: textareas[0] ? textareas[0].value : '',
-        event_date: dateInput ? dateInput.value : '',
-        event_time: timeInput ? timeInput.value : '',
-        image_url: ''
-      };
-
-      if (!report.county) {
+      if (!countySelect.value) {
         alert('Please select a county before submitting.');
         return;
       }
 
-      if (!report.incident_type) {
+      if (!selectedIncidentType) {
         alert('Please select an incident type before submitting.');
         return;
       }
 
-      if (!report.impact_area) {
-        alert('The selected incident type could not be categorized. Please choose a valid incident type.');
+      if (!impactArea) {
+        alert('The selected incident type could not be categorized.');
         return;
       }
 
       try {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+
+        const imageUrl = await uploadImageIfSelected();
+
+        const report = {
+          county: countySelect.value,
+          impact_area: impactArea,
+          incident_type: selectedIncidentType,
+          description: textareas[0] ? textareas[0].value : '',
+          event_date: dateInput ? dateInput.value : '',
+          event_time: timeInput ? timeInput.value : '',
+          image_url: imageUrl
+        };
+
         const response = await fetch(API_BASE + '/api/add-report', {
           method: 'POST',
           headers: {
@@ -189,14 +214,23 @@
 
         alert('Report submitted successfully. Thank you.');
         form.reset();
-        submitButton.disabled = true;
 
         if (selectedLocationText) {
           selectedLocationText.textContent = 'No county selected yet';
         }
+
+        if (incidentPanel) {
+          incidentPanel.classList.add('hidden-panel');
+        }
+
+        submitButton.textContent = 'Submit Report';
+        submitButton.disabled = true;
       } catch (error) {
         console.error(error);
         alert(error.message || 'Something went wrong while submitting the report.');
+
+        submitButton.textContent = 'Submit Report';
+        submitButton.disabled = !privacyCheck.checked;
       }
     });
   }

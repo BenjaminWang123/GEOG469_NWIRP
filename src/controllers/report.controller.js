@@ -3,7 +3,7 @@ const db = require('../config/database');
 exports.getReports = async (req, res) => {
   try {
     const response = await db.query(
-      'SELECT * FROM "tblImpactReports" ORDER BY created_at DESC'
+      'SELECT * FROM "tblimpactreports" ORDER BY created_at DESC'
     );
 
     res.status(200).send({
@@ -44,7 +44,7 @@ exports.addReport = async (req, res) => {
     image_url = image_url || null;
 
     const response = await db.query(
-      `INSERT INTO "tblImpactReports"
+      `INSERT INTO "tblimpactreports"
         (county, incident_type, description, event_date, event_time, image_url)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,

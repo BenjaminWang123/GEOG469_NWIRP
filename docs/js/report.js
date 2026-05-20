@@ -144,7 +144,7 @@
         }
       } catch (error) {
         console.error(error);
-        alert('Something went wrong while submitting the report. Please check your backend connection.');
+        alert(error.message);
       }
     });
   }

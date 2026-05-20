@@ -1,4 +1,5 @@
 const { createClient } = require("@supabase/supabase-js");
+const crypto = require("crypto");
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -6,46 +7,47 @@ const supabase = createClient(
 );
 
 exports.uploadImage = async (req, res) => {
-
   try {
-
     if (!req.file) {
       return res.status(400).json({
+        success: false,
         error: "No image uploaded"
       });
     }
 
-    const safeOriginalName = req.file.originalname
-      .replace(/\s+/g, '-')
-      .replace(/[^a-zA-Z0-9.-]/g, '');
+    const ext = req.file.originalname.split(".").pop();
 
-    const fileName = `reports/${Date.now()}-${safeOriginalName}`;
+    const fileName = `${Date.now()}-${crypto.randomUUID()}.${ext}`;
+
+    console.log("Uploading:", fileName);
 
     const { error } = await supabase.storage
       .from("report-images")
       .upload(fileName, req.file.buffer, {
-        contentType: req.file.mimetype
+        contentType: req.file.mimetype,
+        upsert: false
       });
 
-    if (error) throw error;
+    if (error) {
+      console.error(error);
+      throw error;
+    }
 
     const { data } = supabase.storage
       .from("report-images")
       .getPublicUrl(fileName);
 
-    res.json({
+    return res.json({
       success: true,
       image_url: data.publicUrl
     });
 
   } catch (err) {
+    console.error("UPLOAD FAILED:", err);
 
-    console.error(err);
-
-    res.status(500).json({
-      error: "Image upload failed"
+    return res.status(500).json({
+      success: false,
+      error: err.message
     });
-
   }
-
 };

@@ -2,21 +2,140 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impact Dashboard</title>
+
   <link rel="stylesheet" href="css/style.css">
+
+  <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
 </head>
 <body>
 
-<nav>
-  <h2>NWIRP Impact Platform</h2>
-</nav>
+  <nav class="navbar">
+    <div class="logo-wrap">
+      <div class="logo-main">NWIRP</div>
+      <div class="logo-divider"></div>
+      <div class="logo-sub">Northwest Immigrant<br>Rights Project</div>
+    </div>
 
-<section class="placeholder">
-  <h1>Dashboard Prototype</h1>
-  <p>
-    Future implementation: charts, analytics, filtering, and temporal comparisons.
-  </p>
-</section>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="report.html">Report an Impact</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a class="active" href="dashboard.html">Dashboard</a></li>
+      <li><a href="resources.html">Resources</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+
+    <a href="report.html" class="support-btn">Report Now</a>
+  </nav>
+
+  <header class="dashboard-hero">
+    <p class="eyebrow">Analytics Dashboard</p>
+    <h1>Community Impact Trends</h1>
+    <p>
+      This dashboard summarizes anonymized reports by county, impact area, timeline, and incident type. All locations are displayed at the county level.
+    </p>
+  </header>
+
+  <main class="dashboard-page">
+
+    <section class="dashboard-filters">
+      <div>
+        <h3>Dashboard Filters</h3>
+        <p>Filter the analytics by county, impact area, and keyword.</p>
+      </div>
+
+      <div class="dashboard-filter-grid">
+        <input id="dashboard-keyword-filter" type="text" placeholder="Search county, description, or incident type...">
+
+        <select id="dashboard-county-filter">
+          <option value="All">All Counties</option>
+        </select>
+
+        <select id="dashboard-impact-filter">
+          <option value="All">All Impact Areas</option>
+          <option value="Economic">Economic</option>
+          <option value="Health">Health</option>
+          <option value="Education">Education</option>
+          <option value="Social Stability">Social Stability</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="dashboard-stat-grid">
+      <article class="dashboard-stat-card">
+        <p>Total Reports</p>
+        <h2 id="stat-total-reports">0</h2>
+      </article>
+
+      <article class="dashboard-stat-card">
+        <p>Counties Represented</p>
+        <h2 id="stat-total-counties">0</h2>
+      </article>
+
+      <article class="dashboard-stat-card">
+        <p>Top Impact Area</p>
+        <h2 id="stat-top-impact">—</h2>
+      </article>
+
+      <article class="dashboard-stat-card">
+        <p>Top County</p>
+        <h2 id="stat-top-county">—</h2>
+      </article>
+    </section>
+
+    <section class="dashboard-main-grid">
+
+      <article class="dashboard-card dashboard-map-card">
+        <div class="dashboard-card-header">
+          <div>
+            <h3>County Choropleth Map</h3>
+            <p>Darker counties have more submitted reports.</p>
+          </div>
+          <button id="dashboard-recenter-btn">Recenter</button>
+        </div>
+
+        <div id="dashboard-map"></div>
+
+        <div class="dashboard-map-legend">
+          <span>Low</span>
+          <div class="legend-ramp"></div>
+          <span>High</span>
+        </div>
+      </article>
+
+      <article class="dashboard-card">
+        <h3>Counts by Impact Area</h3>
+        <div id="impact-area-chart" class="bar-chart"></div>
+      </article>
+
+      <article class="dashboard-card">
+        <h3>Counts by County</h3>
+        <div id="county-count-chart" class="bar-chart scroll-chart"></div>
+      </article>
+
+      <article class="dashboard-card">
+        <h3>Top Incident Types</h3>
+        <div id="incident-type-chart" class="bar-chart scroll-chart"></div>
+      </article>
+
+      <article class="dashboard-card dashboard-wide-card">
+        <h3>Timeline of Reports</h3>
+        <p class="chart-note">Reports grouped by event date. If event date is missing, created date is used.</p>
+        <div id="timeline-chart" class="timeline-chart"></div>
+      </article>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Dashboard data is generated from anonymized county-level community reports.</p>
+  </footer>
+
+  <script src="js/dashboard.js"></script>
 
 </body>
 </html>

@@ -1,6 +1,5 @@
 const db = require('../config/database');
 
-// GET all reports
 exports.getReports = async (req, res) => {
   try {
     const response = await db.query(
@@ -21,10 +20,9 @@ exports.getReports = async (req, res) => {
   }
 };
 
-// POST a new report
 exports.addReport = async (req, res) => {
   try {
-    const {
+    let {
       county,
       incident_type,
       description,
@@ -39,6 +37,11 @@ exports.addReport = async (req, res) => {
         message: 'County and incident type are required.'
       });
     }
+
+    event_date = event_date || null;
+    event_time = event_time || null;
+    description = description || null;
+    image_url = image_url || null;
 
     const response = await db.query(
       `INSERT INTO "tblImpactReports"
@@ -58,7 +61,7 @@ exports.addReport = async (req, res) => {
 
     res.status(500).send({
       success: false,
-      message: 'Failed to submit report.'
+      message: error.message
     });
   }
 };

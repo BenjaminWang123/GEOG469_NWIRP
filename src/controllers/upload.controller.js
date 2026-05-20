@@ -15,7 +15,11 @@ exports.uploadImage = async (req, res) => {
       });
     }
 
-    const fileName = `${Date.now()}-${req.file.originalname}`;
+    const safeOriginalName = req.file.originalname
+      .replace(/\s+/g, '-')
+      .replace(/[^a-zA-Z0-9.-]/g, '');
+
+    const fileName = `reports/${Date.now()}-${safeOriginalName}`;
 
     const { error } = await supabase.storage
       .from("report-images")

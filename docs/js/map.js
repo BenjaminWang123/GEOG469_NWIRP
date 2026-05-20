@@ -203,19 +203,19 @@
         }
       });
 
-      map.addLayer({
-        id: 'county-report-labels',
-        type: 'symbol',
-        source: 'county-report-centroids',
-        layout: {
-          'text-field': ['to-string', ['get', 'report_count']],
-          'text-size': 13,
-          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold']
-        },
-        paint: {
-          'text-color': '#ffffff'
-        }
-      });
+      // map.addLayer({
+      //   id: 'county-report-labels',
+      //   type: 'symbol',
+      //   source: 'county-report-centroids',
+      //   layout: {
+      //     'text-field': ['to-string', ['get', 'report_count']],
+      //     'text-size': 13,
+      //     'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold']
+      //   },
+      //   paint: {
+      //     'text-color': '#ffffff'
+      //   }
+      // });
 
       map.on('click', 'county-report-circles', (e) => {
         const props = e.features[0].properties;

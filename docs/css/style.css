@@ -147,6 +147,20 @@ select {
   position: relative;
 }
 
+.hero-main-image {
+  position: absolute;
+  left: 70px;
+  bottom: 0;
+  width: 560px;
+  max-height: 560px;
+  object-fit: contain;
+  z-index: 5;
+}
+
+.photo-shape {
+  background: linear-gradient(135deg, #251f4f, #006c70);
+}
+
 .hero-art {
   position: relative;
 }

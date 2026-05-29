@@ -2289,3 +2289,88 @@ footer {
   border-radius: 12px;
   margin-top: 12px;
 }
+
+/* ========================================
+   DASHBOARD PIE CHART
+======================================== */
+
+.pie-chart-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 28px;
+  align-items: center;
+  margin-top: 22px;
+}
+
+.pie-chart-circle {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+
+.pie-chart-center {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: #111318;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pie-chart-center strong {
+  color: white;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.pie-chart-center span {
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.pie-chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pie-legend-row {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 14px;
+}
+
+.pie-legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.pie-legend-label {
+  color: rgba(255,255,255,0.82);
+}
+
+.pie-legend-value {
+  color: white;
+  font-weight: 800;
+}
+
+@media (max-width: 800px) {
+  .pie-chart-layout {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .pie-chart-legend {
+    width: 100%;
+  }
+}

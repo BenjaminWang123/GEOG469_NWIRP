@@ -1,4 +1,3 @@
-
 (() => {
   // Same-domain deployment on Render can use an empty API base.
   // For local testing with Live Server, use:
@@ -98,6 +97,73 @@
     const entries = Object.entries(counts);
     if (!entries.length) return ['—', 0];
     return entries.sort((a, b) => b[1] - a[1])[0];
+  }
+
+  function renderPieChart(container, counts) {
+    const entries = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1]);
+
+    if (!entries.length) {
+      container.innerHTML = '<p class="chart-empty">No data available.</p>';
+      return;
+    }
+
+    const total = entries.reduce((sum, entry) => sum + entry[1], 0);
+    let currentPercent = 0;
+
+    const colors = [
+      '#f04a23',
+      '#ff8a4c',
+      '#006c70',
+      '#f6c98f',
+      '#b9b0d9',
+      '#7f8c8d'
+    ];
+
+    const gradientParts = entries.map(([label, value], index) => {
+      const percent = (value / total) * 100;
+      const start = currentPercent;
+      const end = currentPercent + percent;
+      currentPercent = end;
+
+      return `${colors[index % colors.length]} ${start}% ${end}%`;
+    });
+
+    container.innerHTML = `
+      <div class="pie-chart-layout">
+        <div
+          class="pie-chart-circle"
+          style="background: conic-gradient(${gradientParts.join(', ')});"
+          aria-label="Impact area pie chart"
+        >
+          <div class="pie-chart-center">
+            <strong>${total}</strong>
+            <span>Reports</span>
+          </div>
+        </div>
+
+        <div class="pie-chart-legend">
+          ${entries.map(([label, value], index) => {
+            const percent = ((value / total) * 100).toFixed(1);
+
+            return `
+              <div class="pie-legend-row">
+                <span
+                  class="pie-legend-color"
+                  style="background:${colors[index % colors.length]}"
+                ></span>
+
+                <span class="pie-legend-label">${escapeHTML(label)}</span>
+
+                <span class="pie-legend-value">
+                  ${value} (${percent}%)
+                </span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
   }
 
   function renderBarChart(container, counts, limit = 10) {
@@ -220,7 +286,7 @@
     const filteredReports = getFilteredReports();
 
     updateStats(filteredReports);
-    renderBarChart(impactChart, countBy(filteredReports, 'impact_area'), 6);
+    renderPieChart(impactChart, countBy(filteredReports, 'impact_area'));
     renderBarChart(countyChart, countBy(filteredReports, 'county'), 12);
     renderBarChart(incidentChart, countBy(filteredReports, 'incident_type'), 12);
     renderTimelineChart(filteredReports);

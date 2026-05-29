@@ -2877,3 +2877,48 @@ footer {
   background: rgba(255,255,255,0.94) !important;
   color: var(--navy) !important;
 }
+
+/* FINAL dashboard chart visibility fix */
+
+.dashboard-chart-card {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+}
+
+.dashboard-chart-card h2,
+.dashboard-chart-card p,
+.dashboard-chart-card span,
+.dashboard-chart-card div {
+  color: var(--navy) !important;
+}
+
+.bar-label,
+.bar-value,
+.pie-legend-label,
+.pie-legend-value {
+  color: var(--navy) !important;
+}
+
+.bar-track {
+  background: rgba(16, 21, 37, 0.14) !important;
+}
+
+.bar-fill {
+  background: linear-gradient(90deg, var(--orange), #ff8a4c) !important;
+}
+
+.pie-chart-center {
+  background: #ffffff !important;
+}
+
+.timeline-scroll-wrap {
+  background: #ffffff !important;
+}
+
+.timeline-label {
+  fill: var(--navy) !important;
+}
+
+.axis-line {
+  stroke: rgba(16, 21, 37, 0.3) !important;
+}

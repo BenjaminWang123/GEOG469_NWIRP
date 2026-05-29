@@ -190,10 +190,7 @@
               }
             </div>
 
-            <div class="blog-box-footer">
-              <span>County-level report only</span>
-              <a href="report.html">View on Map →</a>
-            </div>
+
           </article>
         `;
       })

@@ -2722,3 +2722,158 @@ footer {
   background: rgba(255,255,255,0.92);
   color: var(--navy);
 }
+
+/* ========================================
+   DASHBOARD FINAL LIGHT THEME FIX
+======================================== */
+
+.dashboard-page {
+  background:
+    radial-gradient(circle at top left, rgba(240,74,35,0.08), transparent 32%),
+    linear-gradient(135deg, #faf5ef 0%, #eef7f7 100%);
+  color: var(--navy);
+}
+
+.dashboard-hero {
+  background: linear-gradient(135deg, #f8ffff 0%, #effafa 100%);
+  color: var(--navy);
+}
+
+.dashboard-hero h1,
+.dashboard-hero p,
+.dashboard-hero .eyebrow {
+  color: var(--navy);
+}
+
+.dashboard-hero .eyebrow {
+  color: var(--orange);
+}
+
+.dashboard-filters,
+.dashboard-stat-card,
+.dashboard-chart-card,
+.dashboard-map-card {
+  background: rgba(255,255,255,0.94) !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(16,21,37,0.09) !important;
+  box-shadow: 0 14px 35px rgba(16,21,37,0.08) !important;
+}
+
+.dashboard-chart-card h2,
+.dashboard-map-card h2,
+.dashboard-filters h3,
+.dashboard-stat-card h2,
+.dashboard-stat-card p,
+.dashboard-chart-card p,
+.dashboard-map-card p {
+  color: var(--navy) !important;
+}
+
+.dashboard-filters p {
+  color: #4d5663 !important;
+}
+
+.dashboard-filter-grid input,
+.dashboard-filter-grid select {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(16,21,37,0.16) !important;
+}
+
+/* Bar charts */
+.bar-label,
+.bar-value {
+  color: var(--navy) !important;
+}
+
+.bar-track {
+  background: rgba(16,21,37,0.12) !important;
+}
+
+.bar-fill {
+  background: linear-gradient(90deg, var(--orange), #ff8a4c) !important;
+}
+
+/* Pie chart */
+.pie-chart-layout {
+  color: var(--navy) !important;
+}
+
+.pie-chart-center {
+  background: white !important;
+  border: 1px solid rgba(16,21,37,0.08) !important;
+}
+
+.pie-chart-center strong {
+  color: var(--navy) !important;
+}
+
+.pie-chart-center span {
+  color: #5e6470 !important;
+}
+
+.pie-legend-label,
+.pie-legend-value {
+  color: var(--navy) !important;
+}
+
+/* Timeline */
+.timeline-scroll-wrap {
+  background: rgba(255,255,255,0.65) !important;
+}
+
+.axis-line {
+  stroke: rgba(16,21,37,0.25) !important;
+}
+
+.timeline-line {
+  stroke: var(--orange) !important;
+}
+
+.timeline-dot {
+  fill: var(--orange) !important;
+}
+
+.timeline-label {
+  fill: #4d5663 !important;
+}
+
+/* Make dashboard more interesting */
+.dashboard-stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-stat-card::before,
+.dashboard-chart-card::before,
+.dashboard-map-card::before {
+  content: "";
+  display: block;
+  height: 5px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--orange), var(--teal));
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.dashboard-stat-card,
+.dashboard-chart-card,
+.dashboard-map-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-stat-card:hover,
+.dashboard-chart-card:hover,
+.dashboard-map-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 42px rgba(16,21,37,0.13) !important;
+}
+
+/* Map legend */
+.dashboard-map-card .map-legend,
+.dashboard-map-legend {
+  background: rgba(255,255,255,0.94) !important;
+  color: var(--navy) !important;
+}

@@ -2374,3 +2374,177 @@ footer {
     width: 100%;
   }
 }
+
+/* ========================================
+   LIGHT THEME ALIGNMENT FOR BLOG, DASHBOARD,
+   RESOURCES, AND ABOUT PAGES
+======================================== */
+
+/* Page backgrounds */
+.blog-filter-section,
+.blog-list-section,
+.dashboard-page,
+.resources-page,
+.about-page {
+  background: linear-gradient(135deg, var(--cream), var(--soft-blue));
+  color: var(--navy);
+}
+
+/* Hero sections */
+.blog-hero,
+.dashboard-hero,
+.resources-hero,
+.about-hero {
+  background: linear-gradient(135deg, #f8ffff 0%, #effafa 100%);
+  color: var(--navy);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.blog-hero p,
+.dashboard-hero p,
+.resources-hero p,
+.about-hero p {
+  color: #34404a;
+}
+
+/* Main cards */
+.blog-filter-card,
+.blog-box,
+.dashboard-filters,
+.dashboard-stat-card,
+.dashboard-chart-card,
+.dashboard-map-card,
+.resource-section,
+.resources-hero-card,
+.about-card,
+.method-card-about,
+.workflow-step,
+.team-card {
+  background: rgba(255,255,255,0.88);
+  color: var(--navy);
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
+}
+
+/* Blog cards */
+.blog-box h2,
+.blog-box h3,
+.blog-box p,
+.blog-box small,
+.blog-box-footer span {
+  color: var(--navy);
+}
+
+.blog-box-footer {
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+.blog-box-footer a {
+  color: var(--orange);
+}
+
+/* Blog filter inputs */
+.filter-grid input,
+.filter-grid select,
+.dashboard-filter-grid input,
+.dashboard-filter-grid select {
+  background: white;
+  color: var(--navy);
+  border: 1px solid rgba(0,0,0,0.12);
+}
+
+/* Category tabs */
+.category-tabs button {
+  background: white;
+  color: var(--navy);
+  border: 1px solid rgba(0,0,0,0.12);
+}
+
+.category-tabs .active-tab,
+.category-tabs button:hover {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: white;
+}
+
+/* Dashboard text */
+.dashboard-stat-card p,
+.dashboard-chart-card p,
+.dashboard-map-card p,
+.bar-label,
+.bar-value,
+.pie-legend-label,
+.pie-legend-value {
+  color: var(--navy);
+}
+
+.bar-track {
+  background: rgba(16,21,37,0.12);
+}
+
+.bar-fill {
+  background: var(--orange);
+}
+
+/* Pie chart center */
+.pie-chart-center {
+  background: white;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.pie-chart-center strong {
+  color: var(--navy);
+}
+
+.pie-chart-center span {
+  color: var(--text-gray);
+}
+
+/* Empty messages */
+.empty-blog-message,
+.chart-empty {
+  background: rgba(255,255,255,0.85);
+  color: var(--navy);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+/* Resource page */
+.step-card,
+.right-card,
+.resource-action-card,
+.resource-warning-card {
+  background: rgba(255,255,255,0.9);
+  color: var(--navy);
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
+}
+
+.step-card p,
+.right-card p,
+.resource-action-card p,
+.resource-warning-card p {
+  color: #34404a;
+}
+
+/* About page */
+.about-card p,
+.method-card-about p,
+.workflow-step p,
+.team-card p {
+  color: #34404a;
+}
+
+/* Keep visual emphasis */
+.tag,
+.eyebrow {
+  color: var(--orange);
+}
+
+.economic,
+.health,
+.education,
+.social {
+  background: rgba(240,74,35,0.12);
+  color: var(--orange);
+  border: 1px solid rgba(240,74,35,0.25);
+}

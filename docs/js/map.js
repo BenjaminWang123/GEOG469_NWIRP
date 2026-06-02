@@ -140,6 +140,84 @@
     return counts;
   }
 
+  function buildCityVisualization() {
+    const cityCounts = {};
+
+    reportRows.forEach((report) => {
+      if (!report.city || !report.city_lat || !report.city_lng) return;
+
+      const key = `${report.city}, ${report.county}`;
+
+      if (!cityCounts[key]) {
+        cityCounts[key] = {
+          city: report.city,
+          county: report.county,
+          lat: Number(report.city_lat),
+          lng: Number(report.city_lng),
+          report_count: 0
+        };
+      }
+
+      cityCounts[key].report_count += 1;
+    });
+
+    const cityGeojson = {
+      type: 'FeatureCollection',
+      features: Object.values(cityCounts).map((item) => ({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [item.lng, item.lat]
+        },
+        properties: item
+      }))
+    };
+
+    if (map.getSource('city-report-points')) {
+      map.getSource('city-report-points').setData(cityGeojson);
+      return;
+    }
+
+    map.addSource('city-report-points', {
+      type: 'geojson',
+      data: cityGeojson
+    });
+
+    map.addLayer({
+      id: 'city-report-circles',
+      type: 'circle',
+      source: 'city-report-points',
+      minzoom: 7,
+      paint: {
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['get', 'report_count'],
+          1, 8,
+          5, 14,
+          15, 22
+        ],
+        'circle-color': '#006c70',
+        'circle-opacity': 0.82,
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-width': 2
+      }
+    });
+
+    map.on('click', 'city-report-circles', (e) => {
+      const props = e.features[0].properties;
+
+      new maplibregl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(`
+          <strong>${props.city}</strong><br>
+          ${props.county}<br>
+          ${props.report_count} report(s)
+        `)
+        .addTo(map);
+    });
+  }
+
   function getCountyCentroidFeature(feature) {
     const countyName = getCountyName(feature);
     const count = feature.properties.report_count || 0;
@@ -186,6 +264,7 @@
         id: 'county-report-circles',
         type: 'circle',
         source: 'county-report-centroids',
+        maxzoom: 7,
         paint: {
           'circle-radius': [
             'interpolate',
@@ -252,6 +331,7 @@
 
       reportRows = result.rows || [];
       buildCountyVisualization();
+      buildCityVisualization();
     } catch (error) {
       console.warn('Could not load report data:', error.message);
     }

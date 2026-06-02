@@ -11,6 +11,11 @@
   const countyFilter = document.getElementById('dashboard-county-filter');
   const impactFilter = document.getElementById('dashboard-impact-filter');
 
+  const locationLevelFilter = document.getElementById('dashboard-location-level-filter');
+  const cityFilter = document.getElementById('dashboard-city-filter');
+  const statLocationLabel = document.getElementById('stat-location-label');
+  const statTopLocationLabel = document.getElementById('stat-top-location-label');
+
   const totalReportsEl = document.getElementById('stat-total-reports');
   const totalCountiesEl = document.getElementById('stat-total-counties');
   const topImpactEl = document.getElementById('stat-top-impact');
@@ -24,6 +29,10 @@
   let reports = [];
   let countyGeojson = null;
   let dashboardMap = null;
+
+  function getLocationKey() {
+    return locationLevelFilter.value === 'city' ? 'city' : 'county';
+  }
 
   function normalizeCountyName(name) {
     if (!name) return '';
@@ -85,11 +94,26 @@
         report.event_date
       ].join(' ').toLowerCase();
 
-      const matchesKeyword = !keyword || searchableText.includes(keyword);
-      const matchesCounty = selectedCounty === 'All' || report.county === selectedCounty;
-      const matchesImpact = selectedImpact === 'All' || report.impact_area === selectedImpact;
+      const selectedCity = cityFilter.value;
+      const selectedLevel = locationLevelFilter.value;
 
-      return matchesKeyword && matchesCounty && matchesImpact;
+      const matchesLocation =
+        selectedLevel === 'county'
+          ? selectedCounty === 'All' || report.county === selectedCounty
+          : selectedCity === 'All' || report.city === selectedCity;
+
+      return matchesKeyword && matchesLocation && matchesImpact;
+    });
+  }
+
+  function populateCityFilter(rows) {
+    const cities = [...new Set(rows.map((report) => report.city).filter(Boolean))].sort();
+
+    cities.forEach((city) => {
+      const option = document.createElement('option');
+      option.value = city;
+      option.textContent = city;
+      cityFilter.appendChild(option);
     });
   }
 
@@ -251,16 +275,23 @@
   }
 
   function updateStats(rows) {
-    const countyCounts = countBy(rows, 'county');
+    const locationKey = getLocationKey();
+    const locationCounts = countBy(rows, locationKey);
     const impactCounts = countBy(rows, 'impact_area');
 
-    const [topCounty] = getTopEntry(countyCounts);
+    const [topLocation] = getTopEntry(locationCounts);
     const [topImpact] = getTopEntry(impactCounts);
 
     totalReportsEl.textContent = rows.length;
-    totalCountiesEl.textContent = Object.keys(countyCounts).filter((county) => county !== 'Unknown').length;
+    totalCountiesEl.textContent = Object.keys(locationCounts).filter((x) => x !== 'Unknown').length;
     topImpactEl.textContent = topImpact;
-    topCountyEl.textContent = topCounty;
+    topCountyEl.textContent = topLocation;
+
+    statLocationLabel.textContent =
+      locationKey === 'city' ? 'Cities Represented' : 'Counties Represented';
+
+    statTopLocationLabel.textContent =
+      locationKey === 'city' ? 'Top City' : 'Top County';
   }
 
   function updateChoropleth(rows) {
@@ -287,7 +318,7 @@
 
     updateStats(filteredReports);
     renderPieChart(impactChart, countBy(filteredReports, 'impact_area'));
-    renderBarChart(countyChart, countBy(filteredReports, 'county'), 12);
+    renderBarChart(countyChart, countBy(filteredReports, getLocationKey()), 12);
     renderBarChart(incidentChart, countBy(filteredReports, 'incident_type'), 12);
     renderTimelineChart(filteredReports);
     updateChoropleth(filteredReports);
@@ -410,6 +441,7 @@
 
     reports = result.rows || [];
     populateCountyFilter(reports);
+    populateCityFilter(reports);
     updateDashboard();
   }
 
@@ -417,6 +449,8 @@
     keywordFilter.addEventListener('input', updateDashboard);
     countyFilter.addEventListener('change', updateDashboard);
     impactFilter.addEventListener('change', updateDashboard);
+    locationLevelFilter.addEventListener('change', updateDashboard);
+    cityFilter.addEventListener('change', updateDashboard);
   }
 
   async function init() {

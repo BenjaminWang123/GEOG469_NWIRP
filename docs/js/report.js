@@ -8,6 +8,7 @@
   const methodCards = document.querySelectorAll('.method-card');
   const selectedLocationText = document.getElementById('selected-location-text');
   const countySelect = document.getElementById('county-select');
+  const citySelect = document.getElementById('city-select');
   const incidentTypeSelect = document.getElementById('incident-type-select');
   const imageInput = document.getElementById('incident-image');
   const selectedImageName = document.getElementById('selected-image-name');
@@ -175,6 +176,29 @@
     });
   }
 
+  if (citySelect) {
+    citySelect.addEventListener('change', () => {
+      const selectedOption = citySelect.options[citySelect.selectedIndex];
+
+      const city = citySelect.value;
+      const county = selectedOption.dataset.county;
+
+      if (countySelect && county) {
+        countySelect.value = county;
+      }
+
+      if (selectedLocationText) {
+        selectedLocationText.textContent = city && county
+          ? `${city}, ${county}`
+          : 'No city selected yet';
+      }
+
+      if (incidentPanel && city) {
+        incidentPanel.classList.remove('hidden-panel');
+      }
+    });
+  }
+
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -186,8 +210,8 @@
       const selectedIncidentType = incidentTypeSelect ? incidentTypeSelect.value : '';
       const impactArea = getImpactAreaFromIncidentType(selectedIncidentType);
 
-      if (!countySelect.value) {
-        alert('Please select a county before submitting.');
+      if (!citySelect.value || !countySelect.value) {
+        alert('Please select a city before submitting.');
         return;
       }
 
@@ -209,6 +233,9 @@
 
         const report = {
           county: countySelect.value,
+          city: citySelect.value,
+          city_lat: selectedCityOption.dataset.lat,
+          city_lng: selectedCityOption.dataset.lng,
           impact_area: impactArea,
           incident_type: selectedIncidentType,
           description: textareas[0] ? textareas[0].value : '',

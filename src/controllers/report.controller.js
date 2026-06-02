@@ -23,10 +23,61 @@ exports.getReports = async (req, res) => {
 };
 
 // POST a new report
+// exports.addReport = async (req, res) => {
+//   try {
+//     let {
+//       county,
+//       impact_area,
+//       incident_type,
+//       description,
+//       event_date,
+//       event_time,
+//       image_url
+//     } = req.body;
+
+//     if (!county || !incident_type) {
+//       return res.status(400).send({
+//         success: false,
+//         message: 'County and incident type are required.'
+//       });
+//     }
+
+//     impact_area = impact_area || null;
+//     description = description || null;
+//     event_date = event_date || null;
+//     event_time = event_time || null;
+//     image_url = image_url || null;
+
+//     const response = await db.query(
+//       `INSERT INTO tblimpactreports
+//         (county, impact_area, incident_type, description, event_date, event_time, image_url)
+//        VALUES ($1, $2, $3, $4, $5, $6, $7)
+//        RETURNING *`,
+//       [county, impact_area, incident_type, description, event_date, event_time, image_url]
+//     );
+
+//     res.status(201).send({
+//       success: true,
+//       message: 'Report submitted successfully.',
+//       report: response.rows[0]
+//     });
+//   } catch (error) {
+//     console.error('Error adding report:', error);
+
+//     res.status(500).send({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// };
+
 exports.addReport = async (req, res) => {
   try {
     let {
       county,
+      city,
+      city_lat,
+      city_lng,
       impact_area,
       incident_type,
       description,
@@ -35,10 +86,10 @@ exports.addReport = async (req, res) => {
       image_url
     } = req.body;
 
-    if (!county || !incident_type) {
+    if (!county || !city || !incident_type) {
       return res.status(400).send({
         success: false,
-        message: 'County and incident type are required.'
+        message: 'County, city, and incident type are required.'
       });
     }
 
@@ -47,13 +98,15 @@ exports.addReport = async (req, res) => {
     event_date = event_date || null;
     event_time = event_time || null;
     image_url = image_url || null;
+    city_lat = city_lat || null;
+    city_lng = city_lng || null;
 
     const response = await db.query(
       `INSERT INTO tblimpactreports
-        (county, impact_area, incident_type, description, event_date, event_time, image_url)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+        (county, city, city_lat, city_lng, impact_area, incident_type, description, event_date, event_time, image_url)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING *`,
-      [county, impact_area, incident_type, description, event_date, event_time, image_url]
+      [county, city, city_lat, city_lng, impact_area, incident_type, description, event_date, event_time, image_url]
     );
 
     res.status(201).send({

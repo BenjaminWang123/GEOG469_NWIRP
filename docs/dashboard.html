@@ -54,6 +54,15 @@
           <option value="All">All Counties</option>
         </select>
 
+        <select id="dashboard-location-level-filter">
+          <option value="county">Analyze by County</option>
+          <option value="city">Analyze by City</option>
+        </select>
+
+        <select id="dashboard-city-filter">
+          <option value="All">All Cities</option>
+        </select>
+
         <select id="dashboard-impact-filter">
           <option value="All">All Impact Areas</option>
           <option value="Economic">Economic</option>
@@ -71,7 +80,7 @@
       </article>
 
       <article class="dashboard-stat-card">
-        <p>Counties Represented</p>
+        <p id="stat-location-label">Locations Represented</p>
         <h2 id="stat-total-counties">0</h2>
       </article>
 
@@ -81,7 +90,7 @@
       </article>
 
       <article class="dashboard-stat-card">
-        <p>Top County</p>
+        <p id="stat-top-location-label">Top Location</p>
         <h2 id="stat-top-county">—</h2>
       </article>
     </section>

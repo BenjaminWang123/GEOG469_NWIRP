@@ -4,6 +4,8 @@
   // const API_BASE = 'https://geog469-nwirp-1rtx.onrender.com';
   const API_BASE = '';
 
+  const locationLevelFilter = document.getElementById('blog-location-level-filter');
+  const cityFilter = document.getElementById('blog-city-filter');
   const blogList = document.getElementById('blog-list');
   const resultSummary = document.getElementById('blog-result-summary');
   const keywordFilter = document.getElementById('blog-keyword-filter');
@@ -13,6 +15,19 @@
   const categoryTabs = document.getElementById('blog-category-tabs');
 
   let reports = [];
+
+  function populateCityFilter(rows) {
+    const cities = [
+      ...new Set(rows.map((report) => report.city).filter(Boolean))
+    ].sort();
+
+    cities.forEach((city) => {
+      const option = document.createElement('option');
+      option.value = city;
+      option.textContent = city;
+      cityFilter.appendChild(option);
+    });
+  }
 
   function escapeHTML(value) {
     if (value === null || value === undefined) return '';
@@ -82,6 +97,8 @@
   }
 
   function getFilteredReports() {
+    const selectedCity = cityFilter.value;
+    const selectedLevel = locationLevelFilter.value;
     const keyword = keywordFilter.value.trim().toLowerCase();
     const selectedCounty = countyFilter.value;
     const selectedImpact = impactFilter.value;
@@ -95,13 +112,12 @@
         report.event_date
       ].join(' ').toLowerCase();
 
-      const matchesKeyword = !keyword || searchableText.includes(keyword);
-      const matchesCounty =
-        selectedCounty === 'All' || report.county === selectedCounty;
-      const matchesImpact =
-        selectedImpact === 'All' || report.impact_area === selectedImpact;
+      const matchesLocation =
+        selectedLevel === 'county'
+          ? selectedCounty === 'All' || report.county === selectedCounty
+          : selectedCity === 'All' || report.city === selectedCity;
 
-      return matchesKeyword && matchesCounty && matchesImpact;
+      return matchesKeyword && matchesLocation && matchesImpact;
     });
 
     if (sortFilter.value === 'newest') {
@@ -168,7 +184,7 @@
                 </span>
 
                 <small>
-                  ${escapeHTML(report.county || 'Unknown County')} ·
+                  ${escapeHTML(report.city || 'Unknown City')}, ${escapeHTML(report.county || 'Unknown County')}
                   ${escapeHTML(formatDate(report.event_date || report.created_at))}
                 </small>
               </div>
@@ -198,6 +214,8 @@
   }
 
   function attachFilterEvents() {
+    locationLevelFilter.addEventListener('change', renderReports);
+    cityFilter.addEventListener('change', renderReports);
     keywordFilter.addEventListener('input', renderReports);
     countyFilter.addEventListener('change', renderReports);
     impactFilter.addEventListener('change', renderReports);
@@ -230,6 +248,7 @@
       reports = result.rows || [];
 
       populateCountyFilter(reports);
+      populateCityFilter(reports);
       renderReports();
     } catch (error) {
       console.error(error);

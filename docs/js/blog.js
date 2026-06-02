@@ -97,58 +97,41 @@
   }
 
   function getFilteredReports() {
-    const selectedCity = cityFilter.value;
-    const selectedLevel = locationLevelFilter.value;
     const keyword = keywordFilter.value.trim().toLowerCase();
     const selectedCounty = countyFilter.value;
+    const selectedCity = cityFilter.value;
     const selectedImpact = impactFilter.value;
+    const selectedLevel = locationLevelFilter.value;
 
-    let filtered = reports.filter((report) => {
+    return reports.filter((report) => {
+
       const searchableText = [
         report.county,
+        report.city,
         report.impact_area,
         report.incident_type,
         report.description,
         report.event_date
-      ].join(' ').toLowerCase();
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      const matchesKeyword =
+        !keyword || searchableText.includes(keyword);
 
       const matchesLocation =
         selectedLevel === 'county'
           ? selectedCounty === 'All' || report.county === selectedCounty
           : selectedCity === 'All' || report.city === selectedCity;
 
-      return matchesKeyword && matchesLocation && matchesImpact;
+      const matchesImpact =
+        selectedImpact === 'All' ||
+        report.impact_area === selectedImpact;
+
+      return matchesKeyword &&
+            matchesLocation &&
+            matchesImpact;
     });
-
-    if (sortFilter.value === 'newest') {
-      filtered.sort(
-        (a, b) =>
-          new Date(b.created_at || b.event_date || 0) -
-          new Date(a.created_at || a.event_date || 0)
-      );
-    }
-
-    if (sortFilter.value === 'oldest') {
-      filtered.sort(
-        (a, b) =>
-          new Date(a.created_at || a.event_date || 0) -
-          new Date(b.created_at || b.event_date || 0)
-      );
-    }
-
-    if (sortFilter.value === 'county') {
-      filtered.sort((a, b) =>
-        String(a.county || '').localeCompare(String(b.county || ''))
-      );
-    }
-
-    if (sortFilter.value === 'impact') {
-      filtered.sort((a, b) =>
-        String(a.impact_area || '').localeCompare(String(b.impact_area || ''))
-      );
-    }
-
-    return filtered;
   }
 
   function renderReports() {

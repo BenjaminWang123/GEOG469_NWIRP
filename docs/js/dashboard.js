@@ -1,18 +1,16 @@
 (() => {
-  // Same-domain deployment on Render can use an empty API base.
-  // For local testing with Live Server, use:
-  // const API_BASE = 'https://geog469-nwirp-1rtx.onrender.com';
   const API_BASE = '';
 
   const washingtonCenter = [-120.7, 47.4];
   const washingtonZoom = 6.1;
+  const cityZoomThreshold = 7.5;
 
   const keywordFilter = document.getElementById('dashboard-keyword-filter');
   const countyFilter = document.getElementById('dashboard-county-filter');
   const impactFilter = document.getElementById('dashboard-impact-filter');
-
   const locationLevelFilter = document.getElementById('dashboard-location-level-filter');
   const cityFilter = document.getElementById('dashboard-city-filter');
+
   const statLocationLabel = document.getElementById('stat-location-label');
   const statTopLocationLabel = document.getElementById('stat-top-location-label');
 
@@ -28,6 +26,7 @@
 
   let reports = [];
   let countyGeojson = null;
+  let cityGeojson = null;
   let dashboardMap = null;
 
   function getLocationKey() {
@@ -39,6 +38,11 @@
     return name.includes('County') ? name : `${name} County`;
   }
 
+  function normalizeCityName(name) {
+    if (!name) return '';
+    return String(name).trim();
+  }
+
   function getCountyName(feature) {
     return (
       feature.properties.JURISDICT_NM ||
@@ -46,6 +50,15 @@
       feature.properties.name ||
       feature.properties.COUNTY ||
       feature.properties.county
+    );
+  }
+
+  function getCityName(feature) {
+    return (
+      feature.properties.CITY_DISSOLVE ||
+      feature.properties.CITY ||
+      feature.properties.NAME ||
+      feature.properties.name
     );
   }
 
@@ -59,16 +72,6 @@
       .replaceAll("'", '&#039;');
   }
 
-  function getDateKey(report) {
-    const value = report.event_date || report.created_at;
-    if (!value) return 'Unknown Date';
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return String(value);
-
-    return date.toISOString().slice(0, 10);
-  }
-
   function countBy(rows, key) {
     const counts = {};
 
@@ -78,6 +81,40 @@
     });
 
     return counts;
+  }
+
+  function countReportsByCounty(rows) {
+    const counts = {};
+
+    rows.forEach((report) => {
+      const county = normalizeCountyName(report.county);
+      if (!county) return;
+      counts[county] = (counts[county] || 0) + 1;
+    });
+
+    return counts;
+  }
+
+  function countReportsByCity(rows) {
+    const counts = {};
+
+    rows.forEach((report) => {
+      const city = normalizeCityName(report.city);
+      if (!city) return;
+      counts[city] = (counts[city] || 0) + 1;
+    });
+
+    return counts;
+  }
+
+  function getDateKey(report) {
+    const value = report.event_date || report.created_at;
+    if (!value) return 'Unknown Date';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+
+    return date.toISOString().slice(0, 10);
   }
 
   function getFilteredReports() {
@@ -97,8 +134,7 @@
         report.event_date
       ].join(' ').toLowerCase();
 
-      const matchesKeyword =
-        !keyword || searchableText.includes(keyword);
+      const matchesKeyword = !keyword || searchableText.includes(keyword);
 
       const matchesLocation =
         selectedLevel === 'county'
@@ -109,6 +145,17 @@
         selectedImpact === 'All' || report.impact_area === selectedImpact;
 
       return matchesKeyword && matchesLocation && matchesImpact;
+    });
+  }
+
+  function populateCountyFilter(rows) {
+    const counties = [...new Set(rows.map((report) => report.county).filter(Boolean))].sort();
+
+    counties.forEach((county) => {
+      const option = document.createElement('option');
+      option.value = county;
+      option.textContent = county;
+      countyFilter.appendChild(option);
     });
   }
 
@@ -130,8 +177,7 @@
   }
 
   function renderPieChart(container, counts) {
-    const entries = Object.entries(counts)
-      .sort((a, b) => b[1] - a[1]);
+    const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
 
     if (!entries.length) {
       container.innerHTML = '<p class="chart-empty">No data available.</p>';
@@ -141,31 +187,19 @@
     const total = entries.reduce((sum, entry) => sum + entry[1], 0);
     let currentPercent = 0;
 
-    const colors = [
-      '#f04a23',
-      '#ff8a4c',
-      '#006c70',
-      '#f6c98f',
-      '#b9b0d9',
-      '#7f8c8d'
-    ];
+    const colors = ['#f04a23', '#ff8a4c', '#006c70', '#f6c98f', '#b9b0d9', '#7f8c8d'];
 
     const gradientParts = entries.map(([label, value], index) => {
       const percent = (value / total) * 100;
       const start = currentPercent;
       const end = currentPercent + percent;
       currentPercent = end;
-
       return `${colors[index % colors.length]} ${start}% ${end}%`;
     });
 
     container.innerHTML = `
       <div class="pie-chart-layout">
-        <div
-          class="pie-chart-circle"
-          style="background: conic-gradient(${gradientParts.join(', ')});"
-          aria-label="Impact area pie chart"
-        >
+        <div class="pie-chart-circle" style="background: conic-gradient(${gradientParts.join(', ')});">
           <div class="pie-chart-center">
             <strong>${total}</strong>
             <span>Reports</span>
@@ -175,19 +209,11 @@
         <div class="pie-chart-legend">
           ${entries.map(([label, value], index) => {
             const percent = ((value / total) * 100).toFixed(1);
-
             return `
               <div class="pie-legend-row">
-                <span
-                  class="pie-legend-color"
-                  style="background:${colors[index % colors.length]}"
-                ></span>
-
+                <span class="pie-legend-color" style="background:${colors[index % colors.length]}"></span>
                 <span class="pie-legend-label">${escapeHTML(label)}</span>
-
-                <span class="pie-legend-value">
-                  ${value} (${percent}%)
-                </span>
+                <span class="pie-legend-value">${value} (${percent}%)</span>
               </div>
             `;
           }).join('')}
@@ -255,29 +281,20 @@
 
     timelineChart.innerHTML = `
       <div class="timeline-scroll-wrap">
-        <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Timeline chart">
+        <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
           <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" class="axis-line" />
           <polyline points="${polyline}" class="timeline-line" />
           ${points.map((point) => `
             <circle cx="${point.x}" cy="${point.y}" r="5" class="timeline-dot">
               <title>${escapeHTML(point.date)}: ${point.value} report(s)</title>
             </circle>
-            <text x="${point.x}" y="${height - 14}" text-anchor="middle" class="timeline-label">${escapeHTML(point.date.slice(5))}</text>
+            <text x="${point.x}" y="${height - 14}" text-anchor="middle" class="timeline-label">
+              ${escapeHTML(point.date.slice(5))}
+            </text>
           `).join('')}
         </svg>
       </div>
     `;
-  }
-
-  function populateCountyFilter(rows) {
-    const counties = [...new Set(rows.map((report) => report.county).filter(Boolean))].sort();
-
-    counties.forEach((county) => {
-      const option = document.createElement('option');
-      option.value = county;
-      option.textContent = county;
-      countyFilter.appendChild(option);
-    });
   }
 
   function updateStats(rows) {
@@ -300,16 +317,10 @@
       locationKey === 'city' ? 'Top City' : 'Top County';
   }
 
-  function updateChoropleth(rows) {
+  function updateCountyChoropleth(rows) {
     if (!dashboardMap || !countyGeojson || !dashboardMap.getSource('dashboard-counties')) return;
 
-    const counts = {};
-
-    rows.forEach((report) => {
-      const county = normalizeCountyName(report.county);
-      if (!county) return;
-      counts[county] = (counts[county] || 0) + 1;
-    });
+    const counts = countReportsByCounty(rows);
 
     countyGeojson.features.forEach((feature) => {
       const countyName = normalizeCountyName(getCountyName(feature));
@@ -317,6 +328,19 @@
     });
 
     dashboardMap.getSource('dashboard-counties').setData(countyGeojson);
+  }
+
+  function updateCityChoropleth(rows) {
+    if (!dashboardMap || !cityGeojson || !dashboardMap.getSource('dashboard-cities')) return;
+
+    const counts = countReportsByCity(rows);
+
+    cityGeojson.features.forEach((feature) => {
+      const cityName = normalizeCityName(getCityName(feature));
+      feature.properties.report_count = counts[cityName] || 0;
+    });
+
+    dashboardMap.getSource('dashboard-cities').setData(cityGeojson);
   }
 
   function updateDashboard() {
@@ -327,7 +351,9 @@
     renderBarChart(countyChart, countBy(filteredReports, getLocationKey()), 12);
     renderBarChart(incidentChart, countBy(filteredReports, 'incident_type'), 12);
     renderTimelineChart(filteredReports);
-    updateChoropleth(filteredReports);
+
+    updateCountyChoropleth(filteredReports);
+    updateCityChoropleth(filteredReports);
   }
 
   async function initializeMap() {
@@ -360,7 +386,7 @@
       center: washingtonCenter,
       zoom: washingtonZoom,
       minZoom: 5.2,
-      maxZoom: 10
+      maxZoom: 12
     });
 
     dashboardMap.addControl(new maplibregl.NavigationControl());
@@ -375,17 +401,26 @@
 
     dashboardMap.on('load', async () => {
       const countyResponse = await fetch('data/wa_counties.geojson');
+      const cityResponse = await fetch('data/City_Boundaries.geojson');
+
       countyGeojson = await countyResponse.json();
+      cityGeojson = await cityResponse.json();
 
       dashboardMap.addSource('dashboard-counties', {
         type: 'geojson',
         data: countyGeojson
       });
 
+      dashboardMap.addSource('dashboard-cities', {
+        type: 'geojson',
+        data: cityGeojson
+      });
+
       dashboardMap.addLayer({
         id: 'dashboard-county-fill',
         type: 'fill',
         source: 'dashboard-counties',
+        maxzoom: cityZoomThreshold,
         paint: {
           'fill-color': [
             'interpolate',
@@ -405,9 +440,42 @@
         id: 'dashboard-county-outline',
         type: 'line',
         source: 'dashboard-counties',
+        maxzoom: cityZoomThreshold,
         paint: {
           'line-color': '#ffffff',
           'line-width': 1.2
+        }
+      });
+
+      dashboardMap.addLayer({
+        id: 'dashboard-city-fill',
+        type: 'fill',
+        source: 'dashboard-cities',
+        minzoom: cityZoomThreshold,
+        paint: {
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['coalesce', ['get', 'report_count'], 0],
+            0, '#fff7ec',
+            1, '#fdd49e',
+            3, '#fdbb84',
+            5, '#fc8d59',
+            10, '#e34a33',
+            20, '#b30000'
+          ],
+          'fill-opacity': 0.72
+        }
+      });
+
+      dashboardMap.addLayer({
+        id: 'dashboard-city-outline',
+        type: 'line',
+        source: 'dashboard-cities',
+        minzoom: cityZoomThreshold,
+        paint: {
+          'line-color': '#ffffff',
+          'line-width': 0.9
         }
       });
 
@@ -418,10 +486,18 @@
 
         new maplibregl.Popup()
           .setLngLat(event.lngLat)
-          .setHTML(`
-            <strong>${escapeHTML(countyName)}</strong><br>
-            ${reportCount} report(s)
-          `)
+          .setHTML(`<strong>${escapeHTML(countyName)}</strong><br>${reportCount} report(s)`)
+          .addTo(dashboardMap);
+      });
+
+      dashboardMap.on('click', 'dashboard-city-fill', (event) => {
+        const feature = event.features[0];
+        const cityName = normalizeCityName(getCityName(feature));
+        const reportCount = feature.properties.report_count || 0;
+
+        new maplibregl.Popup()
+          .setLngLat(event.lngLat)
+          .setHTML(`<strong>${escapeHTML(cityName)}</strong><br>${reportCount} report(s)`)
           .addTo(dashboardMap);
       });
 
@@ -430,6 +506,14 @@
       });
 
       dashboardMap.on('mouseleave', 'dashboard-county-fill', () => {
+        dashboardMap.getCanvas().style.cursor = '';
+      });
+
+      dashboardMap.on('mouseenter', 'dashboard-city-fill', () => {
+        dashboardMap.getCanvas().style.cursor = 'pointer';
+      });
+
+      dashboardMap.on('mouseleave', 'dashboard-city-fill', () => {
         dashboardMap.getCanvas().style.cursor = '';
       });
 

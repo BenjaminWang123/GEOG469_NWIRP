@@ -113,6 +113,29 @@
     return null;
   }
 
+  function findCityForPoint(lng, lat) {
+    if (!cityGeojson || !window.turf) return null;
+
+    const point = turf.point([lng, lat]);
+
+    for (const feature of cityGeojson.features) {
+      try {
+        if (turf.booleanPointInPolygon(point, feature)) {
+          const city = normalizeCityName(
+            feature.properties.city_name ||
+            getCityName(feature)
+          );
+
+          return cityLookup[city] || null;
+        }
+      } catch (error) {
+        console.warn('Unable to check city polygon:', error);
+      }
+    }
+
+    return null;
+  }
+
   function buildCityLookup() {
     cityLookup = {};
 
@@ -211,17 +234,17 @@
     }
 
     highlightSelectedCity(cityInfo.city);
-  }
-
-  function zoomToCity(cityName) {
-    const cityInfo = cityLookup[cityName];
-    if (!cityInfo) return;
 
     map.flyTo({
       center: [cityInfo.city_lng, cityInfo.city_lat],
       zoom: 9.5,
       speed: 0.9
     });
+  }
+
+  function zoomToCity(cityName) {
+    const cityInfo = cityLookup[cityName];
+    if (!cityInfo) return;
 
     updateSelectedCity(cityInfo);
   }
@@ -443,6 +466,7 @@
   });
 
   window.findCountyForPoint = findCountyForPoint;
+  window.findCityForPoint = findCityForPoint;
   window.updateSelectedCity = updateSelectedCity;
   window.populateCityDropdown = populateCityDropdown;
   window.zoomToCity = zoomToCity;

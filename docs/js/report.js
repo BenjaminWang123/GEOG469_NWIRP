@@ -139,7 +139,8 @@
         }
 
         if (!navigator.geolocation) {
-          selectedLocationText.textContent = 'Geolocation is not supported by this browser. Please choose a city manually.';
+          selectedLocationText.textContent =
+            'Geolocation is not supported by this browser. Please choose a city manually.';
           return;
         }
 
@@ -148,28 +149,63 @@
             const lng = position.coords.longitude;
             const lat = position.coords.latitude;
 
-            if (window.findCityForPoint) {
-              const cityInfo = window.findCityForPoint(lng, lat);
-
-              if (cityInfo && window.updateSelectedCity) {
-                window.updateSelectedCity(cityInfo);
-                return;
-              }
+            if (window.reportMap) {
+              window.reportMap.flyTo({
+                center: [lng, lat],
+                zoom: 10,
+                speed: 0.9
+              });
             }
 
-            if (window.findCountyForPoint) {
-              const county = window.findCountyForPoint(lng, lat);
+            const cityInfo =
+              window.findCityForPoint &&
+              window.findCityForPoint(lng, lat);
 
-              if (county && countySelect) {
-                countySelect.value = county;
-                selectedLocationText.textContent = `${county} detected. Please choose the closest city manually.`;
-              } else {
-                selectedLocationText.textContent = 'Could not match your location. Please choose a city manually.';
+            if (cityInfo && window.updateSelectedCity) {
+              window.updateSelectedCity(cityInfo);
+
+              if (selectedLocationText) {
+                selectedLocationText.textContent = `${cityInfo.city}, ${cityInfo.county}`;
               }
+
+              return;
+            }
+
+            const county =
+              window.findCountyForPoint &&
+              window.findCountyForPoint(lng, lat);
+
+            if (county) {
+              if (countySelect) {
+                countySelect.value = county;
+              }
+
+              if (window.populateCityDropdown) {
+                window.populateCityDropdown(county);
+              }
+
+              if (selectedLocationText) {
+                selectedLocationText.textContent =
+                  `${county} detected. Please choose the closest city manually.`;
+              }
+
+              if (incidentPanel) {
+                incidentPanel.classList.remove('hidden-panel');
+              }
+
+              return;
+            }
+
+            if (selectedLocationText) {
+              selectedLocationText.textContent =
+                'Could not match your location. Please choose a city manually.';
             }
           },
           () => {
-            selectedLocationText.textContent = 'Location permission was denied. Please choose a city manually.';
+            if (selectedLocationText) {
+              selectedLocationText.textContent =
+                'Location permission was denied. Please choose a city manually.';
+            }
           }
         );
       }
@@ -290,6 +326,7 @@
         form.reset();
 
         if (selectedImageName) selectedImageName.textContent = 'No image selected';
+
         if (imagePreview) {
           imagePreview.classList.add('hidden-panel');
           imagePreview.src = '';

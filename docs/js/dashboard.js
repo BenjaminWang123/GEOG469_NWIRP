@@ -24,14 +24,6 @@
   const incidentChart = document.getElementById('incident-type-chart');
   const timelineChart = document.getElementById('timeline-chart');
 
-  const selectedPlacePanel = document.getElementById('selected-place-panel');
-  const selectedPlaceTitle = document.getElementById('selected-place-title');
-  const selectedPlaceSummary = document.getElementById('selected-place-summary');
-  const selectedImpactChart = document.getElementById('selected-impact-chart');
-  const selectedIncidentChart = document.getElementById('selected-incident-chart');
-  const selectedTimelineChart = document.getElementById('selected-timeline-chart');
-  const closeSelectedPlacePanel = document.getElementById('close-selected-place-panel');
-
   let reports = [];
   let countyGeojson = null;
   let cityGeojson = null;
@@ -73,6 +65,7 @@
 
   function escapeHTML(value) {
     if (value === null || value === undefined) return '';
+
     return String(value)
       .replaceAll('&', '&amp;')
       .replaceAll('<', '&lt;')
@@ -158,7 +151,9 @@
   }
 
   function populateCountyFilter(rows) {
-    const counties = [...new Set(rows.map((report) => report.county).filter(Boolean))].sort();
+    const counties = [
+      ...new Set(rows.map((report) => report.county).filter(Boolean))
+    ].sort();
 
     countyFilter.innerHTML = '<option value="All">All Counties</option>';
 
@@ -216,6 +211,7 @@
       const start = currentPercent;
       const end = currentPercent + percent;
       currentPercent = end;
+
       return `${colors[index % colors.length]} ${start}% ${end}%`;
     });
 
@@ -231,6 +227,7 @@
         <div class="pie-chart-legend">
           ${entries.map(([label, value], index) => {
             const percent = ((value / total) * 100).toFixed(1);
+
             return `
               <div class="pie-legend-row">
                 <span class="pie-legend-color" style="background:${colors[index % colors.length]}"></span>
@@ -272,10 +269,6 @@
   }
 
   function renderTimelineChart(rows) {
-    renderTimelineChartForContainer(timelineChart, rows, true);
-  }
-
-  function renderTimelineChartForContainer(container, rows, fullSize = false) {
     const counts = {};
 
     rows.forEach((report) => {
@@ -288,12 +281,7 @@
       .sort((a, b) => new Date(a[0]) - new Date(b[0]));
 
     if (!entries.length) {
-      container.innerHTML = '<p class="chart-empty">No timeline data available.</p>';
-      return;
-    }
-
-    if (!fullSize) {
-      renderBarChart(container, Object.fromEntries(entries), 6);
+      timelineChart.innerHTML = '<p class="chart-empty">No timeline data available.</p>';
       return;
     }
 
@@ -305,12 +293,13 @@
     const points = entries.map(([date, value], index) => {
       const x = padding + (index / Math.max(entries.length - 1, 1)) * (width - padding * 2);
       const y = height - padding - (value / maxValue) * (height - padding * 2);
+
       return { date, value, x, y };
     });
 
     const polyline = points.map((point) => `${point.x},${point.y}`).join(' ');
 
-    container.innerHTML = `
+    timelineChart.innerHTML = `
       <div class="timeline-scroll-wrap">
         <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
           <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" class="axis-line" />
@@ -374,27 +363,7 @@
     dashboardMap.getSource('dashboard-cities').setData(cityGeojson);
   }
 
-  function showSelectedPlacePanel(placeType, placeName) {
-    if (!selectedPlacePanel) return;
-
-    const placeReports = reports.filter((report) => {
-      return placeType === 'county'
-        ? report.county === placeName
-        : report.city === placeName;
-    });
-
-    selectedPlaceTitle.textContent = placeName;
-    selectedPlaceSummary.textContent =
-      `${placeReports.length} report(s) found for this ${placeType}.`;
-
-    renderBarChart(selectedImpactChart, countBy(placeReports, 'impact_area'), 5);
-    renderBarChart(selectedIncidentChart, countBy(placeReports, 'incident_type'), 5);
-    renderTimelineChartForContainer(selectedTimelineChart, placeReports, false);
-
-    selectedPlacePanel.classList.remove('hidden-panel');
-  }
-
-  function highlightSelectedBoundary(placeType, placeName) {
+  function highlightSelectedBoundary(placeName) {
     if (!dashboardMap) return;
 
     if (dashboardMap.getLayer('dashboard-county-outline')) {
@@ -573,19 +542,19 @@
 
         countyFilter.value = countyName;
         locationLevelFilter.value = 'county';
+
         populateCityFilter(reports);
         cityFilter.value = 'All';
 
-        showSelectedPlacePanel('county', countyName);
-        highlightSelectedBoundary('county', countyName);
         updateDashboard();
+        highlightSelectedBoundary(countyName);
 
         new maplibregl.Popup()
           .setLngLat(event.lngLat)
           .setHTML(`
             <strong>${escapeHTML(countyName)}</strong><br>
             ${reportCount} report(s)<br>
-            <small>County selected.</small>
+            <small>The charts now show this county.</small>
           `)
           .addTo(dashboardMap);
       });
@@ -598,16 +567,15 @@
         locationLevelFilter.value = 'city';
         cityFilter.value = cityName;
 
-        showSelectedPlacePanel('city', cityName);
-        highlightSelectedBoundary('city', cityName);
         updateDashboard();
+        highlightSelectedBoundary(cityName);
 
         new maplibregl.Popup()
           .setLngLat(event.lngLat)
           .setHTML(`
             <strong>${escapeHTML(cityName)}</strong><br>
             ${reportCount} report(s)<br>
-            <small>City selected.</small>
+            <small>The charts now show this city.</small>
           `)
           .addTo(dashboardMap);
       });
@@ -641,6 +609,7 @@
     }
 
     reports = result.rows || [];
+
     populateCountyFilter(reports);
     populateCityFilter(reports);
     updateDashboard();
@@ -652,18 +621,20 @@
     countyFilter.addEventListener('change', () => {
       populateCityFilter(reports);
       cityFilter.value = 'All';
+      locationLevelFilter.value = 'county';
       updateDashboard();
     });
 
     impactFilter.addEventListener('change', updateDashboard);
     locationLevelFilter.addEventListener('change', updateDashboard);
-    cityFilter.addEventListener('change', updateDashboard);
 
-    if (closeSelectedPlacePanel) {
-      closeSelectedPlacePanel.addEventListener('click', () => {
-        selectedPlacePanel.classList.add('hidden-panel');
-      });
-    }
+    cityFilter.addEventListener('change', () => {
+      if (cityFilter.value !== 'All') {
+        locationLevelFilter.value = 'city';
+      }
+
+      updateDashboard();
+    });
   }
 
   async function init() {

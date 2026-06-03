@@ -2493,3 +2493,15 @@ footer {
   color: #101525 !important;
   font-size: 16px !important;
 }
+
+/* Fix Top Incident Types text being cut off */
+#incident-type-chart .bar-row {
+  grid-template-columns: minmax(220px, 1.4fr) 2fr 40px;
+}
+
+#incident-type-chart .bar-label {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  line-height: 1.3;
+}

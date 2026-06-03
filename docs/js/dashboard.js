@@ -203,7 +203,6 @@
 
     const total = entries.reduce((sum, entry) => sum + entry[1], 0);
     let currentPercent = 0;
-
     const colors = ['#f04a23', '#ff8a4c', '#006c70', '#f6c98f', '#b9b0d9', '#7f8c8d'];
 
     const gradientParts = entries.map(([label, value], index) => {
@@ -211,7 +210,6 @@
       const start = currentPercent;
       const end = currentPercent + percent;
       currentPercent = end;
-
       return `${colors[index % colors.length]} ${start}% ${end}%`;
     });
 
@@ -227,7 +225,6 @@
         <div class="pie-chart-legend">
           ${entries.map(([label, value], index) => {
             const percent = ((value / total) * 100).toFixed(1);
-
             return `
               <div class="pie-legend-row">
                 <span class="pie-legend-color" style="background:${colors[index % colors.length]}"></span>
@@ -258,7 +255,7 @@
 
       return `
         <div class="bar-row">
-          <div class="bar-label">${escapeHTML(label)}</div>
+          <div class="bar-label" title="${escapeHTML(label)}">${escapeHTML(label)}</div>
           <div class="bar-track">
             <div class="bar-fill" style="width:${width}%"></div>
           </div>
@@ -293,7 +290,6 @@
     const points = entries.map(([date, value], index) => {
       const x = padding + (index / Math.max(entries.length - 1, 1)) * (width - padding * 2);
       const y = height - padding - (value / maxValue) * (height - padding * 2);
-
       return { date, value, x, y };
     });
 
@@ -363,6 +359,49 @@
     dashboardMap.getSource('dashboard-cities').setData(cityGeojson);
   }
 
+  function getFeatureCenter(feature) {
+    const coordinates = [];
+
+    function collectCoords(coords) {
+      if (typeof coords[0] === 'number') {
+        coordinates.push(coords);
+      } else {
+        coords.forEach(collectCoords);
+      }
+    }
+
+    collectCoords(feature.geometry.coordinates);
+
+    const lng = coordinates.reduce((sum, coord) => sum + coord[0], 0) / coordinates.length;
+    const lat = coordinates.reduce((sum, coord) => sum + coord[1], 0) / coordinates.length;
+
+    return [lng, lat];
+  }
+
+  function zoomToSelectedPlace(placeType, placeName) {
+    if (!dashboardMap) return;
+
+    const sourceData = placeType === 'county' ? countyGeojson : cityGeojson;
+    if (!sourceData) return;
+
+    const matchedFeature = sourceData.features.find((feature) => {
+      const name =
+        placeType === 'county'
+          ? normalizeCountyName(getCountyName(feature))
+          : normalizeCityName(getCityName(feature));
+
+      return name === placeName;
+    });
+
+    if (!matchedFeature) return;
+
+    dashboardMap.flyTo({
+      center: getFeatureCenter(matchedFeature),
+      zoom: placeType === 'county' ? 7.1 : 10,
+      speed: 0.9
+    });
+  }
+
   function highlightSelectedBoundary(placeName) {
     if (!dashboardMap) return;
 
@@ -413,6 +452,21 @@
     }
   }
 
+  function updateCountyChartVisibility() {
+    const countyChartCard = countyChart.closest('.dashboard-card');
+    if (!countyChartCard) return;
+
+    if (
+      locationLevelFilter.value === 'county' &&
+      countyFilter.value === 'All' &&
+      cityFilter.value === 'All'
+    ) {
+      countyChartCard.style.display = '';
+    } else {
+      countyChartCard.style.display = 'none';
+    }
+  }
+
   function updateDashboard() {
     const filteredReports = getFilteredReports();
 
@@ -422,11 +476,9 @@
     renderBarChart(incidentChart, countBy(filteredReports, 'incident_type'), 12);
     renderTimelineChart(filteredReports);
 
-    // Important:
-    // The map should always use the full dataset,
-    // so other counties/cities do not become white after filtering.
     updateCountyChoropleth(reports);
     updateCityChoropleth(reports);
+    updateCountyChartVisibility();
   }
 
   async function initializeMap() {
@@ -560,7 +612,6 @@
       dashboardMap.on('click', 'dashboard-county-fill', (event) => {
         const feature = event.features[0];
         const countyName = normalizeCountyName(getCountyName(feature));
-        const reportCount = feature.properties.report_count || 0;
 
         countyFilter.value = countyName;
         locationLevelFilter.value = 'county';
@@ -570,35 +621,19 @@
 
         updateDashboard();
         highlightSelectedBoundary(countyName);
-
-        new maplibregl.Popup()
-          .setLngLat(event.lngLat)
-          .setHTML(`
-            <strong>${escapeHTML(countyName)}</strong><br>
-            ${reportCount} report(s)<br>
-            <small>The charts now show this county.</small>
-          `)
-          .addTo(dashboardMap);
+        zoomToSelectedPlace('county', countyName);
       });
 
       dashboardMap.on('click', 'dashboard-city-fill', (event) => {
         const feature = event.features[0];
         const cityName = normalizeCityName(getCityName(feature));
-        const reportCount = feature.properties.report_count || 0;
 
         locationLevelFilter.value = 'city';
         cityFilter.value = cityName;
 
         updateDashboard();
         highlightSelectedBoundary(cityName);
-
-        new maplibregl.Popup()
-          .setLngLat(event.lngLat)
-          .setHTML(`
-            <strong>${escapeHTML(cityName)}</strong><br>
-            ${reportCount} report(s)<br>
-          `)
-          .addTo(dashboardMap);
+        zoomToSelectedPlace('city', cityName);
       });
 
       dashboardMap.on('mouseenter', 'dashboard-county-fill', () => {
@@ -648,6 +683,7 @@
 
       if (countyFilter.value !== 'All') {
         highlightSelectedBoundary(countyFilter.value);
+        zoomToSelectedPlace('county', countyFilter.value);
       } else {
         clearBoundaryHighlight();
       }
@@ -660,10 +696,12 @@
 
       if (locationLevelFilter.value === 'county' && countyFilter.value !== 'All') {
         highlightSelectedBoundary(countyFilter.value);
+        zoomToSelectedPlace('county', countyFilter.value);
       }
 
       if (locationLevelFilter.value === 'city' && cityFilter.value !== 'All') {
         highlightSelectedBoundary(cityFilter.value);
+        zoomToSelectedPlace('city', cityFilter.value);
       }
     });
 
@@ -671,9 +709,11 @@
       if (cityFilter.value !== 'All') {
         locationLevelFilter.value = 'city';
         highlightSelectedBoundary(cityFilter.value);
+        zoomToSelectedPlace('city', cityFilter.value);
       } else if (countyFilter.value !== 'All') {
         locationLevelFilter.value = 'county';
         highlightSelectedBoundary(countyFilter.value);
+        zoomToSelectedPlace('county', countyFilter.value);
       } else {
         clearBoundaryHighlight();
       }

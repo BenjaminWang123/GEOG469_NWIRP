@@ -267,6 +267,28 @@
     }
   }
 
+  function populateCityDropdownFromGeojson(cityGeojson) {
+    if (!citySelect || !cityGeojson) return;
+
+    const cityNames = [
+      ...new Set(
+        cityGeojson.features
+          .map((feature) => getCityName(feature))
+          .filter(Boolean)
+          .map((name) => String(name).trim())
+      )
+    ].sort();
+
+    citySelect.innerHTML = '<option value="">Select a city</option>';
+
+    cityNames.forEach((cityName) => {
+      const option = document.createElement('option');
+      option.value = cityName;
+      option.textContent = cityName;
+      citySelect.appendChild(option);
+    });
+  }
+
   async function loadBoundaries() {
     const countyResponse = await fetch('data/wa_counties.geojson');
     const cityResponse = await fetch('data/City_Boundaries.geojson');
@@ -281,6 +303,7 @@
 
     countyGeojson = await countyResponse.json();
     cityGeojson = await cityResponse.json();
+    populateCityDropdownFromGeojson(cityGeojson);
 
     map.addSource('wa-counties', {
       type: 'geojson',

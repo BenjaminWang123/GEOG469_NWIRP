@@ -3372,3 +3372,345 @@ body:has(.resources-hero) {
   }
 }
 
+
+/* ========================================
+   ABOUT PAGE LIGHT PUBLIC-FACING REDESIGN
+   Polished civic data platform style
+   Additive override: keeps existing About content unchanged
+======================================== */
+
+/* About page base */
+body:has(.about-page),
+body:has(.about-hero) {
+  background: #faf5ef;
+  color: var(--navy);
+}
+
+.about-page {
+  background:
+    radial-gradient(circle at 8% 10%, rgba(240, 74, 35, 0.06), transparent 28%),
+    radial-gradient(circle at 90% 14%, rgba(0, 108, 112, 0.07), transparent 30%),
+    #faf5ef !important;
+  color: var(--navy) !important;
+}
+
+/* About hero */
+.about-hero {
+  background: linear-gradient(135deg, #f8ffff 0%, #eefafa 100%) !important;
+  color: var(--navy) !important;
+  padding: 78px max(24px, calc((100vw - 1180px) / 2)) 70px !important;
+  border-bottom: 1px solid rgba(16, 21, 37, 0.08);
+}
+
+.about-hero .eyebrow {
+  color: var(--orange) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 14px;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+.about-hero h1 {
+  color: var(--navy) !important;
+  font-size: clamp(40px, 5vw, 62px) !important;
+  line-height: 1.06;
+  letter-spacing: -2px;
+  max-width: 900px;
+  margin-bottom: 20px;
+}
+
+.about-hero p {
+  color: #344054 !important;
+  max-width: 840px;
+  font-size: 19px !important;
+  line-height: 1.65;
+}
+
+/* Centered page sections */
+.about-intro-grid,
+.about-section,
+.workflow-section,
+.contact-section-about {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+.about-intro-grid {
+  padding-top: 70px !important;
+  padding-bottom: 34px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.75fr);
+  gap: 24px;
+}
+
+/* Main about cards */
+.about-card,
+.contact-card-about {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(16, 21, 37, 0.08) !important;
+  border-radius: 24px;
+  padding: 34px !important;
+  box-shadow: 0 14px 34px rgba(16, 21, 37, 0.07) !important;
+}
+
+.large-about-card h2,
+.about-section h2,
+.workflow-section h2,
+.contact-section-about h2 {
+  color: var(--navy) !important;
+  font-size: clamp(30px, 4vw, 40px);
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+
+.large-about-card p,
+.highlight-about-card p,
+.about-section p,
+.workflow-step p,
+.contact-section-about p,
+.team-card p {
+  color: #475467 !important;
+  font-size: 16px;
+  line-height: 1.68;
+}
+
+.large-about-card p + p {
+  margin-top: 14px;
+}
+
+/* Project Goal highlight card */
+.highlight-about-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7f2 100%) !important;
+  border: 1px solid rgba(240, 74, 35, 0.16) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.highlight-about-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: var(--orange);
+}
+
+.highlight-about-card h3 {
+  color: var(--navy) !important;
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+
+/* Methodology section */
+.about-section {
+  padding-top: 56px !important;
+  padding-bottom: 70px !important;
+}
+
+.methodology-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)) !important;
+  gap: 22px;
+  margin-top: 28px;
+}
+
+.method-card-about {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(16, 21, 37, 0.08) !important;
+  border-radius: 22px;
+  padding: 28px !important;
+  min-height: 230px;
+  box-shadow: 0 12px 28px rgba(16, 21, 37, 0.06) !important;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.method-card-about:hover {
+  transform: translateY(-4px);
+  border-color: rgba(240, 74, 35, 0.26) !important;
+  box-shadow: 0 18px 42px rgba(16, 21, 37, 0.10) !important;
+}
+
+.method-card-about span {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--orange) !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+.method-card-about h3 {
+  color: var(--navy) !important;
+  font-size: 21px;
+  margin-bottom: 10px;
+}
+
+.method-card-about p {
+  color: #475467 !important;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Workflow section */
+.workflow-section {
+  padding-top: 70px !important;
+  padding-bottom: 70px !important;
+}
+
+.workflow-timeline {
+  display: grid;
+  gap: 18px;
+  max-width: 920px;
+  margin-top: 28px;
+  position: relative;
+}
+
+.workflow-timeline::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 18px;
+  bottom: 18px;
+  width: 2px;
+  background: rgba(240, 74, 35, 0.20);
+}
+
+.workflow-step {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(16, 21, 37, 0.08) !important;
+  border-radius: 20px;
+  padding: 24px !important;
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 18px;
+  align-items: start;
+  box-shadow: 0 10px 26px rgba(16, 21, 37, 0.06) !important;
+  position: relative;
+}
+
+.workflow-step span {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--orange) !important;
+  color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  z-index: 1;
+}
+
+.workflow-step h3 {
+  color: var(--navy) !important;
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+/* Tech / team cards, if present */
+.tech-stack-grid,
+.team-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+  gap: 20px;
+}
+
+.tech-card,
+.team-card {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(16, 21, 37, 0.08) !important;
+  border-radius: 20px;
+  padding: 24px !important;
+  box-shadow: 0 10px 26px rgba(16, 21, 37, 0.06) !important;
+}
+
+.team-avatar {
+  background: var(--orange) !important;
+  color: #ffffff !important;
+}
+
+/* Contact section */
+.contact-section-about {
+  background: transparent !important;
+  padding-top: 70px !important;
+  padding-bottom: 86px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 24px;
+}
+
+.contact-card-about h3 {
+  color: var(--navy) !important;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.contact-card-about p {
+  color: #475467 !important;
+  margin-bottom: 10px;
+  line-height: 1.65;
+}
+
+.contact-card-about .btn-primary {
+  display: inline-block;
+  margin-top: 16px;
+}
+
+/* About responsive */
+@media (max-width: 1100px) {
+  .about-intro-grid,
+  .contact-section-about {
+    grid-template-columns: 1fr !important;
+  }
+
+  .about-hero {
+    padding-top: 64px !important;
+    padding-bottom: 56px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .about-hero,
+  .about-intro-grid,
+  .about-section,
+  .workflow-section,
+  .contact-section-about {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+
+  .about-hero h1 {
+    font-size: 38px !important;
+    letter-spacing: -1px;
+  }
+
+  .about-card,
+  .method-card-about,
+  .workflow-step,
+  .contact-card-about,
+  .tech-card,
+  .team-card {
+    border-radius: 20px;
+    padding: 24px !important;
+  }
+
+  .workflow-timeline::before {
+    display: none;
+  }
+
+  .workflow-step {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -265,8 +265,28 @@
       currentLocationMarker.remove();
     }
 
+    const markerElement = document.createElement('div');
+    markerElement.style.width = '28px';
+    markerElement.style.height = '28px';
+    markerElement.style.background = '#f04a23';
+    markerElement.style.border = '3px solid #ffffff';
+    markerElement.style.borderRadius = '50%';
+    markerElement.style.boxShadow = '0 0 0 6px rgba(240, 74, 35, 0.25)';
+    markerElement.style.cursor = 'pointer';
+
+    const markerRing = document.createElement('div');
+    markerRing.style.position = 'absolute';
+    markerRing.style.width = '46px';
+    markerRing.style.height = '46px';
+    markerRing.style.left = '-12px';
+    markerRing.style.top = '-12px';
+    markerRing.style.border = '2px solid rgba(240, 74, 35, 0.45)';
+    markerRing.style.borderRadius = '50%';
+
+    markerElement.appendChild(markerRing);
+
     currentLocationMarker = new maplibregl.Marker({
-      color: '#f04a23'
+      element: markerElement
     })
       .setLngLat([lng, lat])
       .setPopup(

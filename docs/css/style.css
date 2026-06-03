@@ -5362,3 +5362,24 @@ body:has(.resources-hero),
   }
 }
 
+.current-location-highlight-marker {
+  width: 28px;
+  height: 28px;
+  background: #f04a23;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(240, 74, 35, 0.25);
+  cursor: pointer;
+}
+
+.current-location-highlight-marker::after {
+  content: "";
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  left: -12px;
+  top: -12px;
+  border: 2px solid rgba(240, 74, 35, 0.45);
+  border-radius: 50%;
+}
+

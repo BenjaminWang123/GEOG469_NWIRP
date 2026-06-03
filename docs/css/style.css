@@ -2936,3 +2936,439 @@ body:has(.blog-hero) {
     font-size: 28px !important;
   }
 }
+
+
+/* ========================================
+   RESOURCES PAGE LIGHT PUBLIC-FACING REDESIGN
+   Calm safety/support style matching Dashboard + Blog
+   Additive override: keeps existing HTML/content/links unchanged
+======================================== */
+
+/* Resources page base */
+body:has(.resources-page),
+body:has(.resources-hero) {
+  background: #faf5ef;
+  color: var(--navy);
+}
+
+.resources-page {
+  background:
+    radial-gradient(circle at 8% 10%, rgba(240, 74, 35, 0.06), transparent 28%),
+    radial-gradient(circle at 90% 14%, rgba(0, 108, 112, 0.07), transparent 30%),
+    #faf5ef !important;
+  color: var(--navy) !important;
+}
+
+/* Resources hero: calm and supportive */
+.resources-hero {
+  background: linear-gradient(135deg, #f8ffff 0%, #eefafa 100%) !important;
+  color: var(--navy) !important;
+  padding: 78px max(24px, calc((100vw - 1180px) / 2)) 70px !important;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+  gap: 42px;
+  align-items: center;
+  border-bottom: 1px solid rgba(16, 21, 37, 0.08);
+}
+
+.resources-hero h1 {
+  color: var(--navy) !important;
+  font-size: clamp(40px, 5vw, 62px) !important;
+  line-height: 1.06;
+  letter-spacing: -2px;
+  max-width: 860px;
+  margin-bottom: 20px;
+}
+
+.resources-hero p {
+  color: #344054 !important;
+  max-width: 780px;
+  font-size: 19px !important;
+  line-height: 1.65;
+}
+
+.resource-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.resource-hero-actions .btn-primary {
+  background: var(--orange);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(240, 74, 35, 0.20);
+}
+
+.resource-hero-actions .btn-primary:hover {
+  background: var(--orange-dark);
+}
+
+.resource-hero-actions .btn-outline,
+.resource-hero-actions .light-outline {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(16, 21, 37, 0.14) !important;
+}
+
+.resource-hero-actions .btn-outline:hover,
+.resource-hero-actions .light-outline:hover {
+  border-color: var(--orange) !important;
+  color: var(--orange-dark) !important;
+}
+
+/* Important Reminder card */
+.resources-hero-card {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(16, 21, 37, 0.08) !important;
+  border-radius: 24px;
+  padding: 30px !important;
+  box-shadow: 0 16px 38px rgba(16, 21, 37, 0.08) !important;
+  backdrop-filter: none !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.resources-hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: var(--orange);
+}
+
+.resources-hero-card .hero-card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: rgba(240, 74, 35, 0.12) !important;
+  color: var(--orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-bottom: 18px;
+}
+
+.resources-hero-card h3 {
+  color: var(--navy) !important;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.resources-hero-card p {
+  color: #475467 !important;
+  font-size: 15px !important;
+  line-height: 1.6;
+}
+
+/* Shared resources section layout */
+.resource-section,
+.rights-callout-section,
+.get-help-section,
+.action-banner-section {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+.resource-section {
+  padding-top: 70px !important;
+  padding-bottom: 70px !important;
+}
+
+.section-heading-block {
+  max-width: 780px;
+  margin-bottom: 34px;
+}
+
+.section-heading-block h2,
+.two-column-resource h2 {
+  color: var(--navy) !important;
+  font-size: clamp(30px, 4vw, 40px);
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+
+.section-heading-block p,
+.two-column-resource p {
+  color: #475467 !important;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+/* If You Encounter ICE Activity cards */
+.steps-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+  gap: 22px;
+}
+
+.step-card {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(16, 21, 37, 0.08) !important;
+  border-radius: 22px;
+  padding: 28px !important;
+  min-height: auto !important;
+  box-shadow: 0 12px 28px rgba(16, 21, 37, 0.06) !important;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(240, 74, 35, 0.26) !important;
+  box-shadow: 0 18px 42px rgba(16, 21, 37, 0.10) !important;
+}
+
+.step-number {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--orange) !important;
+  color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+.step-card h3 {
+  color: var(--navy) !important;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.step-card p {
+  color: #475467 !important;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* You Have Rights callout */
+.rights-callout-section {
+  padding-top: 16px !important;
+  padding-bottom: 70px !important;
+}
+
+.rights-callout-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7f2 100%) !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(240, 74, 35, 0.16) !important;
+  border-radius: 26px;
+  padding: 36px !important;
+  box-shadow: 0 16px 38px rgba(16, 21, 37, 0.08);
+}
+
+.rights-callout-card h2 {
+  color: var(--navy) !important;
+  font-size: clamp(28px, 4vw, 38px);
+  margin-bottom: 24px;
+}
+
+.rights-list-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
+  gap: 18px;
+}
+
+.rights-list-grid div {
+  background: #ffffff !important;
+  border: 1px solid rgba(16, 21, 37, 0.08);
+  border-radius: 18px;
+  padding: 20px !important;
+  box-shadow: 0 8px 22px rgba(16, 21, 37, 0.05);
+}
+
+.rights-list-grid strong {
+  color: var(--navy) !important;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.rights-list-grid p {
+  color: #475467 !important;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Useful information/checklist section */
+.two-column-resource {
+  display: grid !important;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.report-checklist {
+  display: grid;
+  gap: 14px;
+}
+
+.check-item {
+  background: #ffffff !important;
+  color: #344054 !important;
+  border: 1px solid rgba(16, 21, 37, 0.08) !important;
+  border-radius: 16px;
+  padding: 18px 20px !important;
+  box-shadow: 0 8px 22px rgba(16, 21, 37, 0.05);
+  line-height: 1.55;
+}
+
+.check-item::before {
+  content: "✓";
+  color: var(--orange) !important;
+  font-weight: 900;
+  margin-right: 10px;
+}
+
+/* Contact / help cards */
+.get-help-section {
+  background: transparent !important;
+  color: var(--navy) !important;
+  padding-top: 70px !important;
+  padding-bottom: 70px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr);
+  gap: 24px;
+}
+
+.get-help-card {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border: 1px solid rgba(16, 21, 37, 0.08);
+  border-radius: 24px;
+  padding: 34px !important;
+  box-shadow: 0 14px 34px rgba(16, 21, 37, 0.07) !important;
+}
+
+.get-help-card h2,
+.get-help-card h3 {
+  color: var(--navy) !important;
+}
+
+.get-help-card h2 {
+  font-size: clamp(30px, 4vw, 40px);
+  margin-bottom: 14px;
+}
+
+.get-help-card h3 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.get-help-card p,
+.get-help-card li {
+  color: #475467 !important;
+  line-height: 1.65;
+}
+
+.get-help-card ul {
+  padding-left: 20px;
+}
+
+.get-help-card li {
+  margin-bottom: 10px;
+}
+
+.main-help-card .btn-primary {
+  margin-top: 22px;
+  display: inline-block;
+}
+
+/* Orange CTA banner */
+.action-banner-section {
+  padding-top: 28px !important;
+  padding-bottom: 86px !important;
+}
+
+.action-banner {
+  background: linear-gradient(135deg, var(--orange), var(--orange-dark)) !important;
+  color: #ffffff !important;
+  border-radius: 26px;
+  padding: 34px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 18px 40px rgba(240, 74, 35, 0.22);
+}
+
+.action-banner h2 {
+  color: #ffffff !important;
+  font-size: clamp(26px, 4vw, 34px);
+  margin-bottom: 8px;
+}
+
+.action-banner p {
+  color: rgba(255, 255, 255, 0.88) !important;
+  line-height: 1.55;
+}
+
+.action-banner .btn-primary {
+  background: #ffffff !important;
+  color: var(--orange-dark) !important;
+  white-space: nowrap;
+}
+
+.action-banner .btn-primary:hover {
+  background: #fff7f2 !important;
+}
+
+/* Resources responsive */
+@media (max-width: 1100px) {
+  .resources-hero,
+  .two-column-resource,
+  .get-help-section {
+    grid-template-columns: 1fr !important;
+  }
+
+  .resources-hero {
+    padding-top: 64px !important;
+    padding-bottom: 56px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .resources-hero,
+  .resource-section,
+  .rights-callout-section,
+  .get-help-section,
+  .action-banner-section {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+
+  .resources-hero h1 {
+    font-size: 38px !important;
+    letter-spacing: -1px;
+  }
+
+  .resources-hero-card,
+  .rights-callout-card,
+  .get-help-card,
+  .action-banner {
+    border-radius: 20px;
+    padding: 24px !important;
+  }
+
+  .resource-hero-actions,
+  .action-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .resource-hero-actions a,
+  .action-banner a,
+  .resource-hero-actions .btn-primary,
+  .resource-hero-actions .btn-outline,
+  .action-banner .btn-primary {
+    width: 100%;
+    text-align: center;
+  }
+}
+

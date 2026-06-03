@@ -5362,3 +5362,96 @@ body:has(.resources-hero),
   }
 }
 
+
+/* ========================================
+   BLOG CARD FLEXIBLE SIZE FIX
+   Add this at the very bottom of style.css.
+   Purpose: prevent skinny/tall cards and allow flexible columns.
+======================================== */
+
+.blog-list-section {
+  padding-left: max(32px, calc((100vw - 1500px) / 2)) !important;
+  padding-right: max(32px, calc((100vw - 1500px) / 2)) !important;
+}
+
+.blog-result-summary {
+  max-width: 1500px !important;
+}
+
+.blog-box-grid {
+  max-width: 1500px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)) !important;
+  gap: 24px !important;
+
+  border: none !important;
+  align-items: start !important;
+}
+
+.blog-box {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 360px !important;
+
+  padding: 30px !important;
+  border-radius: 22px !important;
+}
+
+.blog-box h2 {
+  font-size: clamp(28px, 2vw, 38px) !important;
+  line-height: 1.12 !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere;
+}
+
+.blog-box p {
+  font-size: 16px !important;
+  line-height: 1.62 !important;
+}
+
+/* Large screens: allow more cards per row without making them too skinny */
+@media (min-width: 1600px) {
+  .blog-box-grid {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)) !important;
+  }
+}
+
+/* Normal laptop screens: usually 3 cards per row */
+@media (max-width: 1300px) {
+  .blog-box-grid {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)) !important;
+  }
+}
+
+/* Zoomed-in or tablet screens: naturally becomes 2 cards */
+@media (max-width: 900px) {
+  .blog-box-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+  }
+
+  .blog-list-section {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+
+  .blog-box h2 {
+    font-size: 30px !important;
+  }
+}
+
+/* Phone screens: one card per row */
+@media (max-width: 620px) {
+  .blog-box-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .blog-box {
+    min-height: auto !important;
+    padding: 24px !important;
+  }
+}
+

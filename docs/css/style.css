@@ -2295,3 +2295,94 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================
+   BLOG IMPACT AREA COLORS + HOVER EFFECT
+======================================== */
+
+.blog-box {
+  --impact-color: var(--orange);
+  --impact-soft: rgba(240, 74, 35, 0.16);
+}
+
+.blog-box.economic-box {
+  --impact-color: #f04a23;
+  --impact-soft: rgba(240, 74, 35, 0.18);
+}
+
+.blog-box.health-box {
+  --impact-color: #00a86b;
+  --impact-soft: rgba(0, 168, 107, 0.18);
+}
+
+.blog-box.education-box {
+  --impact-color: #2f80ed;
+  --impact-soft: rgba(47, 128, 237, 0.18);
+}
+
+.blog-box.social-box {
+  --impact-color: #8b5cf6;
+  --impact-soft: rgba(139, 92, 246, 0.18);
+}
+
+.blog-box.unknown-box {
+  --impact-color: #7f8c8d;
+  --impact-soft: rgba(127, 140, 141, 0.18);
+}
+
+.blog-box::after {
+  background: linear-gradient(
+    0deg,
+    var(--impact-soft),
+    rgba(250, 245, 239, 0.55),
+    transparent
+  ) !important;
+}
+
+.blog-box:hover {
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: inset 0 -6px 0 var(--impact-color) !important;
+}
+
+.blog-box:hover::after {
+  height: 42%;
+}
+
+.blog-box .tag {
+  color: var(--impact-color) !important;
+}
+
+.category-tabs button[data-impact="Economic"]:hover,
+.category-tabs button[data-impact="Economic"].active-tab {
+  background: #f04a23;
+  border-color: #f04a23;
+  color: white;
+}
+
+.category-tabs button[data-impact="Health"]:hover,
+.category-tabs button[data-impact="Health"].active-tab {
+  background: #00a86b;
+  border-color: #00a86b;
+  color: white;
+}
+
+.category-tabs button[data-impact="Education"]:hover,
+.category-tabs button[data-impact="Education"].active-tab {
+  background: #2f80ed;
+  border-color: #2f80ed;
+  color: white;
+}
+
+.category-tabs button[data-impact="Social Stability"]:hover,
+.category-tabs button[data-impact="Social Stability"].active-tab {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: white;
+}
+
+.category-tabs button[data-impact="All"]:hover,
+.category-tabs button[data-impact="All"].active-tab {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: white;
+}

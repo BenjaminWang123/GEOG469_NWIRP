@@ -597,7 +597,7 @@
           .setHTML(`
             <strong>${escapeHTML(cityName)}</strong><br>
             ${reportCount} report(s)<br>
-            <small>The charts now show this city.</small>
+            // <small>The charts now show this city.</small>
           `)
           .addTo(dashboardMap);
       });

@@ -3714,3 +3714,900 @@ body:has(.about-hero) {
   }
 }
 
+
+/* =========================================================
+   SHARP / CLEAN / ORGANIZED SITE-WIDE REFINEMENT
+   Keeps existing NWIRP color palette and JavaScript behavior.
+   Additive override block: place at the very end of style.css.
+========================================================= */
+
+/* ---------- Global structure system ---------- */
+
+:root {
+  --page-max: 1180px;
+  --page-pad: 32px;
+
+  --radius-sharp: 4px;
+  --radius-card: 4px;
+
+  --line-light: rgba(16, 21, 37, 0.14);
+  --line-medium: rgba(16, 21, 37, 0.24);
+
+  --shadow-subtle: 0 1px 2px rgba(16, 21, 37, 0.06);
+  --shadow-none: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--cream);
+  color: var(--navy);
+}
+
+/* Shared page width */
+.hero-text,
+.mission-section,
+.rights-section,
+.report-disclaimer-banner,
+.blog-hero,
+.blog-filter-section,
+.blog-list-section,
+.dashboard-hero,
+.dashboard-page,
+.about-hero,
+.about-intro-grid,
+.about-section,
+.workflow-section,
+.contact-section-about,
+.resources-hero,
+.resource-section,
+.rights-callout-section,
+.get-help-section,
+.action-banner-section {
+  box-sizing: border-box;
+}
+
+/* Reduce overly soft global elements */
+* {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* ---------- Buttons: sharper, brand-consistent ---------- */
+
+.btn-primary,
+.btn-outline,
+.submit-btn,
+.cancel-btn,
+.support-btn,
+.view-blog-btn,
+.action-banner .btn-primary,
+.resource-hero-actions .btn-primary,
+.resource-hero-actions .btn-outline,
+.light-outline {
+  border-radius: var(--radius-sharp) !important;
+  box-shadow: none !important;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.btn-primary:hover,
+.submit-btn:hover,
+.support-btn:hover,
+.view-blog-btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-outline,
+.light-outline {
+  border-width: 1px !important;
+}
+
+/* ---------- Inputs/selects: precise and aligned ---------- */
+
+input,
+select,
+textarea {
+  border-radius: var(--radius-sharp) !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--orange) !important;
+  box-shadow: 0 0 0 2px rgba(240, 74, 35, 0.12) !important;
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.navbar {
+  height: 88px !important;
+  padding: 0 max(28px, calc((100vw - var(--page-max)) / 2)) !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--line-light) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.logo-wrap {
+  min-width: 260px;
+}
+
+.logo-main {
+  font-size: 40px !important;
+  letter-spacing: -2.2px;
+}
+
+.logo-divider {
+  background: var(--line-light) !important;
+}
+
+.logo-sub {
+  color: var(--navy);
+}
+
+.nav-links {
+  gap: 30px !important;
+}
+
+.nav-links a {
+  padding: 33px 0 !important;
+  color: var(--navy);
+}
+
+.nav-links a.active::after,
+.nav-links a:hover::after {
+  height: 2px !important;
+  bottom: 22px !important;
+}
+
+/* =========================================================
+   SHARED HERO STYLE
+========================================================= */
+
+.blog-hero,
+.dashboard-hero,
+.about-hero,
+.resources-hero {
+  max-width: none !important;
+  background:
+    linear-gradient(135deg, #f8ffff 0%, #eefafa 100%) !important;
+  color: var(--navy) !important;
+  border-bottom: 1px solid var(--line-light) !important;
+  padding:
+    72px max(var(--page-pad), calc((100vw - var(--page-max)) / 2))
+    64px !important;
+  box-shadow: none !important;
+}
+
+.blog-hero,
+.resources-hero {
+  display: block !important;
+}
+
+.dashboard-hero .eyebrow,
+.blog-hero .eyebrow,
+.about-hero .eyebrow,
+.resources-hero .eyebrow,
+.eyebrow {
+  color: var(--orange) !important;
+  letter-spacing: 0.16em !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.blog-hero h1,
+.dashboard-hero h1,
+.about-hero h1,
+.resources-hero h1 {
+  color: var(--navy) !important;
+  max-width: 900px;
+  font-size: clamp(38px, 5vw, 60px) !important;
+  line-height: 1.04 !important;
+  letter-spacing: -2px !important;
+  margin-bottom: 20px !important;
+}
+
+.blog-hero p,
+.dashboard-hero p,
+.about-hero p,
+.resources-hero p {
+  color: #344054 !important;
+  max-width: 780px !important;
+  font-size: 18px !important;
+  line-height: 1.65 !important;
+}
+
+/* =========================================================
+   HOME PAGE SHARPENING
+========================================================= */
+
+.hero-home {
+  background: linear-gradient(90deg, #f8ffff 0%, #effafa 100%);
+  border-bottom: 1px solid var(--line-light);
+}
+
+.hero-text {
+  padding-right: max(var(--page-pad), calc((100vw - var(--page-max)) / 2)) !important;
+}
+
+.photo-shape,
+.photo-placeholder {
+  border-radius: var(--radius-card) !important;
+}
+
+.short-line {
+  height: 2px !important;
+}
+
+.mission-section,
+.rights-section {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding-left: var(--page-pad) !important;
+  padding-right: var(--page-pad) !important;
+}
+
+.action-cards,
+.rights-section {
+  gap: 0 !important;
+}
+
+.action-card,
+.rights-card {
+  border-radius: var(--radius-card) !important;
+  border: 1px solid var(--line-light) !important;
+  box-shadow: var(--shadow-subtle) !important;
+}
+
+.action-card + .action-card,
+.rights-card + .rights-card {
+  border-left: 0 !important;
+}
+
+/* =========================================================
+   REPORT PAGE SHARPENING
+========================================================= */
+
+.report-disclaimer-banner {
+  padding:
+    22px max(var(--page-pad), calc((100vw - var(--page-max)) / 2)) !important;
+  border-bottom: 1px solid var(--line-light) !important;
+}
+
+.disclaimer-icon,
+.method-icon,
+.icon-circle,
+.hero-card-icon,
+.step-number,
+.workflow-step span,
+.team-avatar {
+  border-radius: var(--radius-sharp) !important;
+}
+
+.floating-panel {
+  border-radius: var(--radius-card) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.24) !important;
+}
+
+.method-card,
+.info-card,
+.location-box,
+.upload-box,
+.privacy-confirmation-box,
+.map-legend,
+.map-help-box,
+.recenter-map-btn,
+.incident-form input,
+.incident-form textarea,
+.incident-form select,
+.image-preview,
+.preview-image {
+  border-radius: var(--radius-sharp) !important;
+}
+
+.method-card:hover {
+  transform: none !important;
+}
+
+/* =========================================================
+   BLOG PAGE — EDGE-BASED RESPONSIVE EDITORIAL GRID
+========================================================= */
+
+body:has(.blog-hero) {
+  background: var(--cream) !important;
+}
+
+.blog-hero {
+  border-bottom: 1px solid var(--line-light) !important;
+}
+
+.blog-filter-section,
+.blog-list-section {
+  background: var(--cream) !important;
+  padding-left: max(var(--page-pad), calc((100vw - var(--page-max)) / 2)) !important;
+  padding-right: max(var(--page-pad), calc((100vw - var(--page-max)) / 2)) !important;
+}
+
+.blog-filter-section {
+  padding-top: 34px !important;
+  padding-bottom: 28px !important;
+  border-bottom: 1px solid var(--line-light) !important;
+}
+
+.blog-filter-card {
+  background: #ffffff !important;
+  border: 1px solid var(--line-light) !important;
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-subtle) !important;
+  padding: 22px !important;
+}
+
+.filter-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.filter-grid input,
+.filter-grid select {
+  min-height: 46px !important;
+  border: 1px solid var(--line-light) !important;
+  border-radius: var(--radius-sharp) !important;
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+.category-tabs {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.category-tabs button {
+  border-radius: var(--radius-sharp) !important;
+  border: 1px solid var(--line-light) !important;
+  min-height: 38px !important;
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  box-shadow: none !important;
+}
+
+.category-tabs button:hover,
+.category-tabs .active-tab {
+  background: var(--orange) !important;
+  border-color: var(--orange) !important;
+  color: #ffffff !important;
+}
+
+.blog-list-section {
+  padding-top: 28px !important;
+  padding-bottom: 90px !important;
+}
+
+.blog-result-summary {
+  max-width: var(--page-max) !important;
+  margin: 0 auto 22px !important;
+  color: #475467 !important;
+  font-weight: 700;
+}
+
+.blog-box-grid {
+  max-width: var(--page-max) !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)) !important;
+  gap: 0 !important;
+  border-top: 1px solid var(--line-medium) !important;
+  border-left: 1px solid var(--line-medium) !important;
+}
+
+.blog-box {
+  border-radius: 0 !important;
+  border: none !important;
+  border-right: 1px solid var(--line-medium) !important;
+  border-bottom: 1px solid var(--line-medium) !important;
+  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.62) !important;
+  padding: 30px !important;
+  min-height: 360px !important;
+  height: auto !important;
+}
+
+.blog-box:hover {
+  transform: none !important;
+  background: #ffffff !important;
+  box-shadow: inset 0 -5px 0 var(--impact-color, var(--orange)) !important;
+  border-color: var(--line-medium) !important;
+}
+
+.blog-box::after {
+  height: 0 !important;
+  opacity: 0.85;
+}
+
+.blog-box:hover::after {
+  height: 30% !important;
+}
+
+.blog-box h2 {
+  font-size: clamp(26px, 2.2vw, 34px) !important;
+  line-height: 1.1 !important;
+  letter-spacing: -1px !important;
+  margin-bottom: 18px !important;
+}
+
+.blog-box p {
+  color: #344054 !important;
+  font-size: 15.5px !important;
+  line-height: 1.62 !important;
+}
+
+.blog-box .tag {
+  border-radius: var(--radius-sharp) !important;
+  padding: 5px 9px !important;
+}
+
+.blog-report-image {
+  border-radius: var(--radius-sharp) !important;
+  border: 1px solid var(--line-light) !important;
+}
+
+/* =========================================================
+   DASHBOARD PAGE — SHARPER PUBLIC DATA REPORT
+========================================================= */
+
+.dashboard-page {
+  background: var(--cream) !important;
+  padding:
+    34px max(var(--page-pad), calc((100vw - var(--page-max)) / 2))
+    86px !important;
+}
+
+.dashboard-filters {
+  background: #ffffff !important;
+  border: 1px solid var(--line-light) !important;
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-subtle) !important;
+  padding: 22px !important;
+  margin-bottom: 22px !important;
+}
+
+.dashboard-filter-grid {
+  gap: 12px !important;
+}
+
+.dashboard-filter-grid input,
+.dashboard-filter-grid select {
+  border-radius: var(--radius-sharp) !important;
+  border: 1px solid var(--line-light) !important;
+  background: #ffffff !important;
+  color: var(--navy) !important;
+}
+
+.dashboard-stat-grid {
+  gap: 0 !important;
+  border-top: 1px solid var(--line-light);
+  border-left: 1px solid var(--line-light);
+  margin-bottom: 22px !important;
+}
+
+.dashboard-stat-card {
+  border-radius: 0 !important;
+  border: none !important;
+  border-right: 1px solid var(--line-light) !important;
+  border-bottom: 1px solid var(--line-light) !important;
+  box-shadow: none !important;
+}
+
+.dashboard-stat-card::before {
+  height: 3px !important;
+}
+
+.dashboard-main-grid {
+  gap: 0 !important;
+  border-top: 1px solid var(--line-light);
+  border-left: 1px solid var(--line-light);
+}
+
+.dashboard-card {
+  border-radius: 0 !important;
+  border: none !important;
+  border-right: 1px solid var(--line-light) !important;
+  border-bottom: 1px solid var(--line-light) !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+}
+
+#dashboard-map,
+.timeline-scroll-wrap {
+  border-radius: var(--radius-sharp) !important;
+  border: 1px solid var(--line-light) !important;
+}
+
+.dashboard-card-header button {
+  border-radius: var(--radius-sharp) !important;
+  box-shadow: none !important;
+}
+
+.bar-track,
+.bar-fill,
+.legend-ramp,
+.pie-chart-circle,
+.pie-chart-center,
+.pie-legend-color {
+  border-radius: var(--radius-sharp) !important;
+}
+
+.pie-chart-circle,
+.pie-chart-center {
+  box-shadow: none !important;
+  border: 1px solid var(--line-light) !important;
+}
+
+.maplibregl-popup-content {
+  border-radius: var(--radius-sharp) !important;
+  border: 1px solid var(--line-light) !important;
+  box-shadow: 0 2px 10px rgba(16, 21, 37, 0.16) !important;
+}
+
+/* =========================================================
+   ABOUT PAGE — LIGHT, SHARP PROJECT EXPLANATION
+========================================================= */
+
+body:has(.about-page),
+body:has(.about-hero),
+.about-page {
+  background: var(--cream) !important;
+  color: var(--navy) !important;
+}
+
+.about-intro-grid,
+.about-section,
+.workflow-section,
+.contact-section-about {
+  max-width: var(--page-max) !important;
+  margin: 0 auto !important;
+  padding-left: var(--page-pad) !important;
+  padding-right: var(--page-pad) !important;
+}
+
+.about-intro-grid {
+  padding-top: 56px !important;
+  padding-bottom: 34px !important;
+  gap: 0 !important;
+  border-left: 1px solid var(--line-light);
+  border-top: 1px solid var(--line-light);
+}
+
+.about-card,
+.method-card-about,
+.workflow-step,
+.tech-card,
+.team-card,
+.contact-card-about {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-right: 1px solid var(--line-light) !important;
+  border-bottom: 1px solid var(--line-light) !important;
+  box-shadow: none !important;
+}
+
+.about-card {
+  padding: 32px !important;
+}
+
+.large-about-card p,
+.highlight-about-card p,
+.about-section p,
+.workflow-step p,
+.contact-section-about p,
+.team-card p,
+.method-card-about p {
+  color: #475467 !important;
+}
+
+.highlight-about-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7f2 100%) !important;
+}
+
+.highlight-about-card::before {
+  width: 4px !important;
+}
+
+.methodology-grid,
+.tech-stack-grid,
+.team-grid {
+  gap: 0 !important;
+  border-top: 1px solid var(--line-light);
+  border-left: 1px solid var(--line-light);
+}
+
+.method-card-about {
+  min-height: 220px;
+  padding: 26px !important;
+}
+
+.method-card-about:hover {
+  transform: none !important;
+  background: #fffaf7 !important;
+}
+
+.method-card-about span {
+  border-radius: var(--radius-sharp) !important;
+}
+
+.workflow-timeline {
+  gap: 0 !important;
+  border-top: 1px solid var(--line-light);
+  border-left: 1px solid var(--line-light);
+}
+
+.workflow-timeline::before {
+  display: none !important;
+}
+
+.workflow-step {
+  grid-template-columns: 54px 1fr;
+  padding: 24px !important;
+}
+
+.workflow-step span {
+  border-radius: var(--radius-sharp) !important;
+}
+
+.contact-section-about {
+  background: transparent !important;
+  gap: 0 !important;
+  border-left: 1px solid var(--line-light);
+  border-top: 1px solid var(--line-light);
+}
+
+/* =========================================================
+   RESOURCES PAGE — CALM, SHARP SUPPORT LAYOUT
+========================================================= */
+
+body:has(.resources-page),
+body:has(.resources-hero),
+.resources-page {
+  background: var(--cream) !important;
+  color: var(--navy) !important;
+}
+
+.resources-hero {
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.75fr) !important;
+  gap: 0 !important;
+}
+
+.resources-hero-card {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border-radius: 0 !important;
+  border: 1px solid var(--line-light) !important;
+  box-shadow: none !important;
+  padding: 28px !important;
+}
+
+.resources-hero-card h3,
+.resources-hero-card p {
+  color: var(--navy) !important;
+}
+
+.resource-section,
+.rights-callout-section,
+.get-help-section,
+.action-banner-section {
+  max-width: var(--page-max) !important;
+  margin: 0 auto !important;
+  padding-left: var(--page-pad) !important;
+  padding-right: var(--page-pad) !important;
+}
+
+.steps-grid,
+.rights-list-grid,
+.report-checklist,
+.get-help-section {
+  gap: 0 !important;
+  border-top: 1px solid var(--line-light);
+  border-left: 1px solid var(--line-light);
+}
+
+.step-card,
+.rights-list-grid div,
+.check-item,
+.get-help-card {
+  background: #ffffff !important;
+  color: var(--navy) !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-right: 1px solid var(--line-light) !important;
+  border-bottom: 1px solid var(--line-light) !important;
+  box-shadow: none !important;
+}
+
+.step-card:hover {
+  transform: none !important;
+  background: #fffaf7 !important;
+}
+
+.step-card p,
+.rights-list-grid p,
+.check-item,
+.get-help-card p,
+.get-help-card li,
+.section-heading-block p,
+.two-column-resource p {
+  color: #475467 !important;
+}
+
+.rights-callout-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7f2 100%) !important;
+  color: var(--navy) !important;
+  border-radius: 0 !important;
+  border: 1px solid rgba(240, 74, 35, 0.22) !important;
+  box-shadow: none !important;
+}
+
+.rights-callout-card h2,
+.rights-list-grid strong,
+.step-card h3,
+.get-help-card h2,
+.get-help-card h3 {
+  color: var(--navy) !important;
+}
+
+.two-column-resource {
+  gap: 36px !important;
+}
+
+.action-banner {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(240, 74, 35, 0.28);
+}
+
+/* =========================================================
+   RESPONSIVE REFINEMENTS
+========================================================= */
+
+@media (max-width: 1100px) {
+  .navbar {
+    height: auto !important;
+    padding: 22px var(--page-pad) !important;
+    gap: 16px;
+  }
+
+  .logo-wrap {
+    min-width: auto;
+  }
+
+  .nav-links {
+    gap: 20px !important;
+  }
+
+  .nav-links a {
+    padding: 10px 0 !important;
+  }
+
+  .nav-links a.active::after,
+  .nav-links a:hover::after {
+    bottom: -4px !important;
+  }
+
+  .dashboard-main-grid,
+  .dashboard-filters,
+  .about-intro-grid,
+  .contact-section-about,
+  .resources-hero,
+  .get-help-section,
+  .two-column-resource {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-stat-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .dashboard-filter-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .blog-box-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)) !important;
+  }
+}
+
+@media (max-width: 700px) {
+  :root {
+    --page-pad: 22px;
+  }
+
+  .navbar {
+    align-items: flex-start;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .support-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .blog-hero,
+  .dashboard-hero,
+  .about-hero,
+  .resources-hero {
+    padding-top: 48px !important;
+    padding-bottom: 44px !important;
+  }
+
+  .blog-hero h1,
+  .dashboard-hero h1,
+  .about-hero h1,
+  .resources-hero h1 {
+    font-size: 36px !important;
+    letter-spacing: -1px !important;
+  }
+
+  .dashboard-stat-grid,
+  .methodology-grid,
+  .tech-stack-grid,
+  .team-grid,
+  .steps-grid,
+  .rights-list-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .blog-box-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .blog-box {
+    min-height: auto !important;
+  }
+
+  .workflow-step {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pie-chart-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .bar-row,
+  #incident-type-chart .bar-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .bar-value {
+    text-align: left !important;
+  }
+
+  .action-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+

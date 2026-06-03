@@ -1,7 +1,8 @@
 (() => {
   const API_BASE = '';
+
   const washingtonCenter = [-120.7, 47.4];
-  const washingtonZoom = 6.6;
+  const washingtonZoom = 6.3;
   const cityZoomThreshold = 7.5;
 
   const map = new maplibregl.Map({
@@ -32,21 +33,20 @@
     },
     center: washingtonCenter,
     zoom: washingtonZoom,
-    minZoom: 5.5,
+    minZoom: 5.2,
     maxZoom: 13
   });
 
   map.addControl(new maplibregl.NavigationControl());
 
-  let washingtonCountyGeojson = null;
-  let washingtonCityGeojson = null;
+  let countyGeojson = null;
+  let cityGeojson = null;
   let reportRows = [];
 
   const selectedLocationText = document.getElementById('selected-location-text');
   const countySelect = document.getElementById('county-select');
   const citySelect = document.getElementById('city-select');
   const incidentPanel = document.getElementById('incident-panel');
-
   const recenterButton = document.getElementById('recenter-map-btn');
 
   if (recenterButton) {
@@ -71,7 +71,8 @@
 
   function normalizeCountyName(name) {
     if (!name) return '';
-    return String(name).includes('County') ? String(name) : `${name} County`;
+    const value = String(name).trim();
+    return value.includes('County') ? value : `${value} County`;
   }
 
   function normalizeCityName(name) {
@@ -98,12 +99,36 @@
     );
   }
 
+  function countReportsByCounty(rows) {
+    const counts = {};
+
+    rows.forEach((report) => {
+      const county = normalizeCountyName(report.county);
+      if (!county) return;
+      counts[county] = (counts[county] || 0) + 1;
+    });
+
+    return counts;
+  }
+
+  function countReportsByCity(rows) {
+    const counts = {};
+
+    rows.forEach((report) => {
+      const city = normalizeCityName(report.city);
+      if (!city) return;
+      counts[city] = (counts[city] || 0) + 1;
+    });
+
+    return counts;
+  }
+
   function findCountyForPoint(lng, lat) {
-    if (!washingtonCountyGeojson || !window.turf) return null;
+    if (!countyGeojson || !window.turf) return null;
 
     const point = turf.point([lng, lat]);
 
-    for (const feature of washingtonCountyGeojson.features) {
+    for (const feature of countyGeojson.features) {
       if (turf.booleanPointInPolygon(point, feature)) {
         return normalizeCountyName(getCountyName(feature));
       }
@@ -112,32 +137,8 @@
     return null;
   }
 
-  function findCityForPoint(lng, lat) {
-    if (!washingtonCityGeojson || !window.turf) return null;
-
-    const point = turf.point([lng, lat]);
-
-    for (const feature of washingtonCityGeojson.features) {
-      if (turf.booleanPointInPolygon(point, feature)) {
-        const city = normalizeCityName(getCityName(feature));
-        const county = findCountyForPoint(lng, lat);
-        const centroid = turf.centroid(feature);
-        const [cityLng, cityLat] = centroid.geometry.coordinates;
-
-        return {
-          city,
-          county,
-          city_lng: cityLng,
-          city_lat: cityLat
-        };
-      }
-    }
-
-    return null;
-  }
-
   function ensureCityOption(cityInfo) {
-    if (!citySelect || !cityInfo || !cityInfo.city) return;
+    if (!citySelect || !cityInfo.city) return;
 
     let option = [...citySelect.options].find((item) => item.value === cityInfo.city);
 
@@ -172,13 +173,6 @@
         20, '#b30000'
       ]
     ]);
-
-    map.setPaintProperty('city-fill', 'fill-opacity', [
-      'case',
-      ['==', ['get', 'CITY_DISSOLVE'], cityName],
-      0.82,
-      0.5
-    ]);
   }
 
   function updateSelectedCity(cityInfo) {
@@ -186,9 +180,7 @@
 
     ensureCityOption(cityInfo);
 
-    if (citySelect) {
-      citySelect.value = cityInfo.city;
-    }
+    citySelect.value = cityInfo.city;
 
     if (countySelect && cityInfo.county) {
       countySelect.value = cityInfo.county;
@@ -207,61 +199,57 @@
     highlightCity(cityInfo.city);
   }
 
-  function countReportsByCounty(rows) {
-    const counts = {};
+  function findCityForPoint(lng, lat) {
+    if (!cityGeojson || !window.turf) return null;
 
-    rows.forEach((report) => {
-      const county = normalizeCountyName(report.county);
-      if (!county) return;
-      counts[county] = (counts[county] || 0) + 1;
-    });
+    const point = turf.point([lng, lat]);
 
-    return counts;
+    for (const feature of cityGeojson.features) {
+      if (turf.booleanPointInPolygon(point, feature)) {
+        const city = normalizeCityName(getCityName(feature));
+        const county = findCountyForPoint(lng, lat);
+        const centroid = turf.centroid(feature);
+        const [cityLng, cityLat] = centroid.geometry.coordinates;
+
+        return {
+          city,
+          county,
+          city_lat: cityLat,
+          city_lng: cityLng
+        };
+      }
+    }
+
+    return null;
   }
 
-  function countReportsByCity(rows) {
-    const counts = {};
-
-    rows.forEach((report) => {
-      const city = normalizeCityName(report.city);
-      if (!city) return;
-      counts[city] = (counts[city] || 0) + 1;
-    });
-
-    return counts;
-  }
-
-  function buildCountyVisualization() {
-    if (!washingtonCountyGeojson) return;
+  function updateCountyCounts() {
+    if (!countyGeojson || !map.getSource('wa-counties')) return;
 
     const counts = countReportsByCounty(reportRows);
 
-    washingtonCountyGeojson.features.forEach((feature) => {
+    countyGeojson.features.forEach((feature) => {
       const countyName = normalizeCountyName(getCountyName(feature));
       feature.properties.report_count = counts[countyName] || 0;
     });
 
-    if (map.getSource('wa-counties')) {
-      map.getSource('wa-counties').setData(washingtonCountyGeojson);
-    }
+    map.getSource('wa-counties').setData(countyGeojson);
   }
 
-  function buildCityVisualization() {
-    if (!washingtonCityGeojson) return;
+  function updateCityCounts() {
+    if (!cityGeojson || !map.getSource('wa-cities')) return;
 
     const counts = countReportsByCity(reportRows);
 
-    washingtonCityGeojson.features.forEach((feature) => {
+    cityGeojson.features.forEach((feature) => {
       const cityName = normalizeCityName(getCityName(feature));
       feature.properties.report_count = counts[cityName] || 0;
     });
 
-    if (map.getSource('wa-cities')) {
-      map.getSource('wa-cities').setData(washingtonCityGeojson);
-    }
+    map.getSource('wa-cities').setData(cityGeojson);
   }
 
-  async function loadReportsFromDatabase() {
+  async function loadReports() {
     try {
       const response = await fetch(API_BASE + '/api/get-reports');
       const result = await response.json();
@@ -271,177 +259,188 @@
       }
 
       reportRows = result.rows || [];
-      buildCountyVisualization();
-      buildCityVisualization();
+
+      updateCountyCounts();
+      updateCityCounts();
     } catch (error) {
-      console.warn('Could not load report data:', error.message);
+      console.warn('Report data could not load:', error.message);
     }
   }
 
-  async function loadMapLayers() {
-    try {
-      const countyResponse = await fetch('data/wa_counties.geojson');
-      const cityResponse = await fetch('data/City_Boundaries.geojson');
+  async function loadBoundaries() {
+    const countyResponse = await fetch('data/wa_counties.geojson');
+    const cityResponse = await fetch('data/City_Boundaries.geojson');
 
-      if (!countyResponse.ok) {
-        throw new Error('wa_counties.geojson was not found.');
+    if (!countyResponse.ok) {
+      throw new Error('Missing docs/data/wa_counties.geojson');
+    }
+
+    if (!cityResponse.ok) {
+      throw new Error('Missing docs/data/City_Boundaries.geojson');
+    }
+
+    countyGeojson = await countyResponse.json();
+    cityGeojson = await cityResponse.json();
+
+    map.addSource('wa-counties', {
+      type: 'geojson',
+      data: countyGeojson
+    });
+
+    map.addSource('wa-cities', {
+      type: 'geojson',
+      data: cityGeojson
+    });
+
+    map.addLayer({
+      id: 'county-fill',
+      type: 'fill',
+      source: 'wa-counties',
+      maxzoom: cityZoomThreshold,
+      paint: {
+        'fill-color': [
+          'interpolate',
+          ['linear'],
+          ['coalesce', ['get', 'report_count'], 0],
+          0, '#f6c98f',
+          5, '#f4b36b',
+          15, '#ef8a3a',
+          30, '#d94b27'
+        ],
+        'fill-opacity': 0.34
       }
+    });
 
-      if (!cityResponse.ok) {
-        throw new Error('City_Boundaries.geojson was not found.');
+    map.addLayer({
+      id: 'county-outline',
+      type: 'line',
+      source: 'wa-counties',
+      maxzoom: cityZoomThreshold,
+      paint: {
+        'line-color': '#ffffff',
+        'line-width': 1.2
       }
+    });
 
-      washingtonCountyGeojson = await countyResponse.json();
-      washingtonCityGeojson = await cityResponse.json();
+    map.addLayer({
+      id: 'city-fill',
+      type: 'fill',
+      source: 'wa-cities',
+      minzoom: cityZoomThreshold,
+      paint: {
+        'fill-color': [
+          'interpolate',
+          ['linear'],
+          ['coalesce', ['get', 'report_count'], 0],
+          0, '#fff7ec',
+          1, '#fdd49e',
+          3, '#fdbb84',
+          5, '#fc8d59',
+          10, '#e34a33',
+          20, '#b30000'
+        ],
+        'fill-opacity': 0.58
+      }
+    });
 
-      map.addSource('wa-counties', {
-        type: 'geojson',
-        data: washingtonCountyGeojson
-      });
+    map.addLayer({
+      id: 'city-outline',
+      type: 'line',
+      source: 'wa-cities',
+      minzoom: cityZoomThreshold,
+      paint: {
+        'line-color': '#ffffff',
+        'line-width': 0.9
+      }
+    });
 
-      map.addSource('wa-cities', {
-        type: 'geojson',
-        data: washingtonCityGeojson
-      });
+    map.on('click', 'county-fill', (event) => {
+      const feature = event.features[0];
+      const countyName = normalizeCountyName(getCountyName(feature));
+      const reportCount = feature.properties.report_count || 0;
 
-      map.addLayer({
-        id: 'county-fill',
-        type: 'fill',
-        source: 'wa-counties',
-        maxzoom: cityZoomThreshold,
-        paint: {
-          'fill-color': [
-            'interpolate',
-            ['linear'],
-            ['coalesce', ['get', 'report_count'], 0],
-            0, '#f6c98f',
-            5, '#f4b36b',
-            15, '#ef8a3a',
-            30, '#d94b27'
-          ],
-          'fill-opacity': 0.28
-        }
-      });
-
-      map.addLayer({
-        id: 'county-outline',
-        type: 'line',
-        source: 'wa-counties',
-        maxzoom: cityZoomThreshold,
-        paint: {
-          'line-color': '#ffffff',
-          'line-width': 1.2
-        }
-      });
-
-      map.addLayer({
-        id: 'city-fill',
-        type: 'fill',
-        source: 'wa-cities',
-        minzoom: cityZoomThreshold,
-        paint: {
-          'fill-color': [
-            'interpolate',
-            ['linear'],
-            ['coalesce', ['get', 'report_count'], 0],
-            0, '#fff7ec',
-            1, '#fdd49e',
-            3, '#fdbb84',
-            5, '#fc8d59',
-            10, '#e34a33',
-            20, '#b30000'
-          ],
-          'fill-opacity': 0.5
-        }
-      });
-
-      map.addLayer({
-        id: 'city-outline',
-        type: 'line',
-        source: 'wa-cities',
-        minzoom: cityZoomThreshold,
-        paint: {
-          'line-color': '#ffffff',
-          'line-width': 0.8
-        }
-      });
-
-      map.on('click', 'county-fill', (e) => {
-        const countyName = normalizeCountyName(getCountyName(e.features[0]));
-        const count = e.features[0].properties.report_count || 0;
-
-        if (selectedLocationText) {
-          selectedLocationText.textContent = `${countyName} selected. Zoom in and click a city to submit city-level report.`;
-        }
-
-        if (countySelect) {
-          countySelect.value = countyName;
-        }
-
-        new maplibregl.Popup()
-          .setLngLat(e.lngLat)
-          .setHTML(`
-            <strong>${escapeHTML(countyName)}</strong><br>
-            ${count} report(s)<br>
-            <small>Zoom in to select a city.</small>
-          `)
-          .addTo(map);
-      });
-
-      map.on('click', 'city-fill', (e) => {
-        const feature = e.features[0];
-        const cityName = normalizeCityName(getCityName(feature));
-        const count = feature.properties.report_count || 0;
-        const centroid = turf.centroid(feature);
-        const [lng, lat] = centroid.geometry.coordinates;
-        const countyName = findCountyForPoint(lng, lat);
-
-        const cityInfo = {
-          city: cityName,
-          county: countyName,
-          city_lat: lat,
-          city_lng: lng
-        };
-
-        updateSelectedCity(cityInfo);
-
-        new maplibregl.Popup()
-          .setLngLat(e.lngLat)
-          .setHTML(`
-            <strong>${escapeHTML(cityName)}</strong><br>
-            ${escapeHTML(countyName || 'County not detected')}<br>
-            ${count} report(s)
-          `)
-          .addTo(map);
-      });
-
-      map.on('mousemove', 'county-fill', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-
-      map.on('mouseleave', 'county-fill', () => {
-        map.getCanvas().style.cursor = '';
-      });
-
-      map.on('mousemove', 'city-fill', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-
-      map.on('mouseleave', 'city-fill', () => {
-        map.getCanvas().style.cursor = '';
-      });
-
-      await loadReportsFromDatabase();
-    } catch (error) {
-      console.warn(error.message);
+      if (countySelect) {
+        countySelect.value = countyName;
+      }
 
       if (selectedLocationText) {
-        selectedLocationText.textContent = 'City boundary layer was not loaded. Check docs/data/City_Boundaries.geojson.';
+        selectedLocationText.textContent = `${countyName}. Zoom in to select a city.`;
       }
-    }
+
+      map.flyTo({
+        center: event.lngLat,
+        zoom: cityZoomThreshold + 0.6,
+        speed: 0.8
+      });
+
+      new maplibregl.Popup()
+        .setLngLat(event.lngLat)
+        .setHTML(`
+          <strong>${escapeHTML(countyName)}</strong><br>
+          ${reportCount} report(s)<br>
+          <small>Zooming in for city selection.</small>
+        `)
+        .addTo(map);
+    });
+
+    map.on('click', 'city-fill', (event) => {
+      const feature = event.features[0];
+      const cityName = normalizeCityName(getCityName(feature));
+      const reportCount = feature.properties.report_count || 0;
+      const center = turf.centroid(feature);
+      const [lng, lat] = center.geometry.coordinates;
+      const countyName = findCountyForPoint(lng, lat);
+
+      const cityInfo = {
+        city: cityName,
+        county: countyName,
+        city_lat: lat,
+        city_lng: lng
+      };
+
+      updateSelectedCity(cityInfo);
+
+      new maplibregl.Popup()
+        .setLngLat(event.lngLat)
+        .setHTML(`
+          <strong>${escapeHTML(cityName)}</strong><br>
+          ${escapeHTML(countyName || 'County not detected')}<br>
+          ${reportCount} report(s)<br>
+          <small>This city is selected for your report.</small>
+        `)
+        .addTo(map);
+    });
+
+    map.on('mouseenter', 'county-fill', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'county-fill', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
+    map.on('mouseenter', 'city-fill', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'city-fill', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
+    await loadReports();
   }
 
-  map.on('load', loadMapLayers);
+  map.on('load', async () => {
+    try {
+      await loadBoundaries();
+    } catch (error) {
+      console.error(error);
+
+      if (selectedLocationText) {
+        selectedLocationText.textContent = error.message;
+      }
+    }
+  });
 
   window.findCountyForPoint = findCountyForPoint;
   window.findCityForPoint = findCityForPoint;

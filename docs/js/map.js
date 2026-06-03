@@ -2,8 +2,7 @@
   const API_BASE = '';
 
   const washingtonCenter = [-120.7, 47.4];
-  const washingtonZoom = 6.3;
-  const cityZoomThreshold = 7.5;
+  const washingtonZoom = 6.4;
 
   const map = new maplibregl.Map({
     container: 'map',
@@ -42,6 +41,7 @@
   let countyGeojson = null;
   let cityGeojson = null;
   let reportRows = [];
+  let cityLookup = {};
 
   const selectedLocationText = document.getElementById('selected-location-text');
   const countySelect = document.getElementById('county-select');
@@ -99,30 +99,6 @@
     );
   }
 
-  function countReportsByCounty(rows) {
-    const counts = {};
-
-    rows.forEach((report) => {
-      const county = normalizeCountyName(report.county);
-      if (!county) return;
-      counts[county] = (counts[county] || 0) + 1;
-    });
-
-    return counts;
-  }
-
-  function countReportsByCity(rows) {
-    const counts = {};
-
-    rows.forEach((report) => {
-      const city = normalizeCityName(report.city);
-      if (!city) return;
-      counts[city] = (counts[city] || 0) + 1;
-    });
-
-    return counts;
-  }
-
   function findCountyForPoint(lng, lat) {
     if (!countyGeojson || !window.turf) return null;
 
@@ -137,53 +113,91 @@
     return null;
   }
 
-  function ensureCityOption(cityInfo) {
-    if (!citySelect || !cityInfo.city) return;
+  function buildCityLookup() {
+    cityLookup = {};
 
-    let option = [...citySelect.options].find((item) => item.value === cityInfo.city);
+    cityGeojson.features.forEach((feature) => {
+      const city = normalizeCityName(getCityName(feature));
+      if (!city) return;
 
-    if (!option) {
-      option = document.createElement('option');
-      option.value = cityInfo.city;
-      option.textContent = cityInfo.city;
-      citySelect.appendChild(option);
-    }
+      const centroid = turf.centroid(feature);
+      const [lng, lat] = centroid.geometry.coordinates;
+      const county = findCountyForPoint(lng, lat);
 
-    option.dataset.county = cityInfo.county || '';
-    option.dataset.lat = cityInfo.city_lat || '';
-    option.dataset.lng = cityInfo.city_lng || '';
+      feature.properties.city_name = city;
+      feature.properties.county_name = county;
+
+      cityLookup[city] = {
+        city,
+        county,
+        city_lat: lat,
+        city_lng: lng
+      };
+    });
   }
 
-  function highlightCity(cityName) {
+  function populateCityDropdown(selectedCounty = '') {
+    if (!citySelect) return;
+
+    citySelect.innerHTML = '<option value="">Select a city</option>';
+
+    Object.values(cityLookup)
+      .filter((item) => !selectedCounty || item.county === selectedCounty)
+      .sort((a, b) => a.city.localeCompare(b.city))
+      .forEach((item) => {
+        const option = document.createElement('option');
+        option.value = item.city;
+        option.textContent = item.city;
+        option.dataset.county = item.county || '';
+        option.dataset.lat = item.city_lat || '';
+        option.dataset.lng = item.city_lng || '';
+        citySelect.appendChild(option);
+      });
+  }
+
+  function highlightSelectedCity(cityName) {
     if (!map.getLayer('city-fill')) return;
 
     map.setPaintProperty('city-fill', 'fill-color', [
       'case',
-      ['==', ['get', 'CITY_DISSOLVE'], cityName],
+      ['==', ['get', 'city_name'], cityName],
       '#f04a23',
-      [
-        'interpolate',
-        ['linear'],
-        ['coalesce', ['get', 'report_count'], 0],
-        0, '#fff7ec',
-        1, '#fdd49e',
-        3, '#fdbb84',
-        5, '#fc8d59',
-        10, '#e34a33',
-        20, '#b30000'
-      ]
+      '#006c70'
+    ]);
+
+    map.setPaintProperty('city-fill', 'fill-opacity', [
+      'case',
+      ['==', ['get', 'city_name'], cityName],
+      0.35,
+      0.15
+    ]);
+
+    map.setPaintProperty('city-outline', 'line-color', [
+      'case',
+      ['==', ['get', 'city_name'], cityName],
+      '#f04a23',
+      '#004b4e'
+    ]);
+
+    map.setPaintProperty('city-outline', 'line-width', [
+      'case',
+      ['==', ['get', 'city_name'], cityName],
+      2.8,
+      1.1
     ]);
   }
 
   function updateSelectedCity(cityInfo) {
     if (!cityInfo || !cityInfo.city) return;
 
-    ensureCityOption(cityInfo);
-
-    citySelect.value = cityInfo.city;
-
     if (countySelect && cityInfo.county) {
       countySelect.value = cityInfo.county;
+    }
+
+    populateCityDropdown(cityInfo.county);
+
+    if (citySelect) {
+      citySelect.value = cityInfo.city;
     }
 
     if (selectedLocationText) {
@@ -196,57 +210,67 @@
       incidentPanel.classList.remove('hidden-panel');
     }
 
-    highlightCity(cityInfo.city);
+    highlightSelectedCity(cityInfo.city);
   }
 
-  function findCityForPoint(lng, lat) {
-    if (!cityGeojson || !window.turf) return null;
+  function zoomToCity(cityName) {
+    const cityInfo = cityLookup[cityName];
+    if (!cityInfo) return;
 
-    const point = turf.point([lng, lat]);
+    map.flyTo({
+      center: [cityInfo.city_lng, cityInfo.city_lat],
+      zoom: 9.5,
+      speed: 0.9
+    });
 
-    for (const feature of cityGeojson.features) {
-      if (turf.booleanPointInPolygon(point, feature)) {
-        const city = normalizeCityName(getCityName(feature));
-        const county = findCountyForPoint(lng, lat);
-        const centroid = turf.centroid(feature);
-        const [cityLng, cityLat] = centroid.geometry.coordinates;
+    updateSelectedCity(cityInfo);
+  }
 
-        return {
+  function countReportsByCity(rows) {
+    const counts = {};
+
+    rows.forEach((report) => {
+      const city = normalizeCityName(report.city);
+      if (!city) return;
+
+      const lookup = cityLookup[city] || {};
+
+      if (!counts[city]) {
+        counts[city] = {
           city,
-          county,
-          city_lat: cityLat,
-          city_lng: cityLng
+          county: report.county || lookup.county || '',
+          lat: Number(report.city_lat || lookup.city_lat),
+          lng: Number(report.city_lng || lookup.city_lng),
+          report_count: 0
         };
       }
-    }
 
-    return null;
-  }
-
-  function updateCountyCounts() {
-    if (!countyGeojson || !map.getSource('wa-counties')) return;
-
-    const counts = countReportsByCounty(reportRows);
-
-    countyGeojson.features.forEach((feature) => {
-      const countyName = normalizeCountyName(getCountyName(feature));
-      feature.properties.report_count = counts[countyName] || 0;
+      counts[city].report_count += 1;
     });
 
-    map.getSource('wa-counties').setData(countyGeojson);
+    return counts;
   }
 
-  function updateCityCounts() {
-    if (!cityGeojson || !map.getSource('wa-cities')) return;
+  function updateCityReportCircles() {
+    if (!map.getSource('city-report-points')) return;
 
-    const counts = countReportsByCity(reportRows);
+    const cityCounts = countReportsByCity(reportRows);
 
-    cityGeojson.features.forEach((feature) => {
-      const cityName = normalizeCityName(getCityName(feature));
-      feature.properties.report_count = counts[cityName] || 0;
-    });
+    const cityPointGeojson = {
+      type: 'FeatureCollection',
+      features: Object.values(cityCounts)
+        .filter((item) => Number.isFinite(item.lat) && Number.isFinite(item.lng))
+        .map((item) => ({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [item.lng, item.lat]
+          },
+          properties: item
+        }))
+    };
 
-    map.getSource('wa-cities').setData(cityGeojson);
+    map.getSource('city-report-points').setData(cityPointGeojson);
   }
 
   async function loadReports() {
@@ -259,34 +283,10 @@
       }
 
       reportRows = result.rows || [];
-
-      updateCountyCounts();
-      updateCityCounts();
+      updateCityReportCircles();
     } catch (error) {
       console.warn('Report data could not load:', error.message);
     }
-  }
-
-  function populateCityDropdownFromGeojson(cityGeojson) {
-    if (!citySelect || !cityGeojson) return;
-
-    const cityNames = [
-      ...new Set(
-        cityGeojson.features
-          .map((feature) => getCityName(feature))
-          .filter(Boolean)
-          .map((name) => String(name).trim())
-      )
-    ].sort();
-
-    citySelect.innerHTML = '<option value="">Select a city</option>';
-
-    cityNames.forEach((cityName) => {
-      const option = document.createElement('option');
-      option.value = cityName;
-      option.textContent = cityName;
-      citySelect.appendChild(option);
-    });
   }
 
   async function loadBoundaries() {
@@ -303,52 +303,20 @@
 
     countyGeojson = await countyResponse.json();
     cityGeojson = await cityResponse.json();
-    populateCityDropdownFromGeojson(cityGeojson);
 
-    map.addSource('wa-counties', {
-      type: 'geojson',
-      data: countyGeojson
-    });
+    buildCityLookup();
+    populateCityDropdown();
 
     map.addSource('wa-cities', {
       type: 'geojson',
       data: cityGeojson
     });
 
-    map.addLayer({
-      id: 'county-fill',
-      type: 'fill',
-      source: 'wa-counties',
-      maxzoom: cityZoomThreshold,
-      paint: {
-        'fill-color': [
-          'interpolate',
-          ['linear'],
-          ['coalesce', ['get', 'report_count'], 0],
-          0, '#d8f3f0',
-          1, '#7bd6cf',
-          3, '#21a7a0',
-          5, '#f6a04d',
-          10, '#f04a23',
-          20, '#b8321a'
-        ],
-        'fill-opacity': [
-          'case',
-          ['>', ['coalesce', ['get', 'report_count'], 0], 0],
-          0.78,
-          0.42
-        ]
-      }
-    });
-
-    map.addLayer({
-      id: 'county-outline',
-      type: 'line',
-      source: 'wa-counties',
-      maxzoom: cityZoomThreshold,
-      paint: {
-        'line-color': '#ffffff',
-        'line-width': 1.2
+    map.addSource('city-report-points', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: []
       }
     });
 
@@ -356,17 +324,9 @@
       id: 'city-fill',
       type: 'fill',
       source: 'wa-cities',
-      minzoom: cityZoomThreshold,
       paint: {
-        'line-color': '#004b4e',
-        'line-width': [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          7.5, 1.2,
-          10, 2.2
-        ],
-        'line-opacity': 0.9
+        'fill-color': '#006c70',
+        'fill-opacity': 0.15
       }
     });
 
@@ -374,55 +334,69 @@
       id: 'city-outline',
       type: 'line',
       source: 'wa-cities',
-      minzoom: cityZoomThreshold,
       paint: {
-        'line-color': '#ffffff',
-        'line-width': 0.9
+        'line-color': '#004b4e',
+        'line-width': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          5, 0.7,
+          8, 1.2,
+          11, 2
+        ],
+        'line-opacity': 0.95
       }
     });
 
-    map.on('click', 'county-fill', (event) => {
-      const feature = event.features[0];
-      const countyName = normalizeCountyName(getCountyName(feature));
-      const reportCount = feature.properties.report_count || 0;
-
-      if (countySelect) {
-        countySelect.value = countyName;
+    map.addLayer({
+      id: 'city-report-circles',
+      type: 'circle',
+      source: 'city-report-points',
+      paint: {
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['get', 'report_count'],
+          1, 9,
+          3, 14,
+          6, 20,
+          12, 28,
+          25, 40
+        ],
+        'circle-color': '#f04a23',
+        'circle-opacity': 0.78,
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-width': 2
       }
-
-      if (selectedLocationText) {
-        selectedLocationText.textContent = `${countyName}. Zoom in to select a city.`;
-      }
-
-      map.flyTo({
-        center: event.lngLat,
-        zoom: cityZoomThreshold + 0.6,
-        speed: 0.8
-      });
-
-      new maplibregl.Popup()
-        .setLngLat(event.lngLat)
-        .setHTML(`
-          <strong>${escapeHTML(countyName)}</strong><br>
-          ${reportCount} report(s)<br>
-          <small>Zooming in for city selection.</small>
-        `)
-        .addTo(map);
     });
 
     map.on('click', 'city-fill', (event) => {
       const feature = event.features[0];
-      const cityName = normalizeCityName(getCityName(feature));
-      const reportCount = feature.properties.report_count || 0;
-      const center = turf.centroid(feature);
-      const [lng, lat] = center.geometry.coordinates;
-      const countyName = findCountyForPoint(lng, lat);
+      const city = normalizeCityName(feature.properties.city_name || getCityName(feature));
+      const cityInfo = cityLookup[city];
+
+      if (!cityInfo) return;
+
+      updateSelectedCity(cityInfo);
+
+      new maplibregl.Popup()
+        .setLngLat(event.lngLat)
+        .setHTML(`
+          <strong>${escapeHTML(cityInfo.city)}</strong><br>
+          ${escapeHTML(cityInfo.county || 'County not detected')}<br>
+          <small>This city is selected for your report.</small>
+        `)
+        .addTo(map);
+    });
+
+    map.on('click', 'city-report-circles', (event) => {
+      const props = event.features[0].properties;
 
       const cityInfo = {
-        city: cityName,
-        county: countyName,
-        city_lat: lat,
-        city_lng: lng
+        city: props.city,
+        county: props.county,
+        city_lat: props.lat,
+        city_lng: props.lng
       };
 
       updateSelectedCity(cityInfo);
@@ -430,20 +404,11 @@
       new maplibregl.Popup()
         .setLngLat(event.lngLat)
         .setHTML(`
-          <strong>${escapeHTML(cityName)}</strong><br>
-          ${escapeHTML(countyName || 'County not detected')}<br>
-          ${reportCount} report(s)<br>
-          <small>This city is selected for your report.</small>
+          <strong>${escapeHTML(props.city)}</strong><br>
+          ${escapeHTML(props.county || '')}<br>
+          ${props.report_count} report(s)
         `)
         .addTo(map);
-    });
-
-    map.on('mouseenter', 'county-fill', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
-
-    map.on('mouseleave', 'county-fill', () => {
-      map.getCanvas().style.cursor = '';
     });
 
     map.on('mouseenter', 'city-fill', () => {
@@ -451,6 +416,14 @@
     });
 
     map.on('mouseleave', 'city-fill', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
+    map.on('mouseenter', 'city-report-circles', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'city-report-circles', () => {
       map.getCanvas().style.cursor = '';
     });
 
@@ -470,7 +443,8 @@
   });
 
   window.findCountyForPoint = findCountyForPoint;
-  window.findCityForPoint = findCityForPoint;
   window.updateSelectedCity = updateSelectedCity;
+  window.populateCityDropdown = populateCityDropdown;
+  window.zoomToCity = zoomToCity;
   window.reportMap = map;
 })();

@@ -180,11 +180,18 @@
     countySelect.addEventListener('change', () => {
       const selectedCounty = countySelect.value;
 
+      if (window.populateCityDropdown) {
+        window.populateCityDropdown(selectedCounty);
+      }
+
+      if (citySelect) {
+        citySelect.value = '';
+      }
+
       if (selectedLocationText) {
-        selectedLocationText.textContent =
-          citySelect.value && selectedCounty
-            ? `${citySelect.value}, ${selectedCounty}`
-            : selectedCounty || 'No city selected yet';
+        selectedLocationText.textContent = selectedCounty
+          ? `${selectedCounty} selected. Now choose a city.`
+          : 'No city selected yet';
       }
 
       if (incidentPanel && selectedCounty) {
@@ -207,6 +214,10 @@
       if (selectedLocationText) {
         selectedLocationText.textContent =
           city && county ? `${city}, ${county}` : 'No city selected yet';
+      }
+
+      if (window.zoomToCity && city) {
+        window.zoomToCity(city);
       }
 
       if (incidentPanel && city) {

@@ -369,14 +369,14 @@
     if (dashboardMap.getLayer('dashboard-county-outline')) {
       dashboardMap.setPaintProperty('dashboard-county-outline', 'line-color', [
         'case',
-        ['==', ['coalesce', ['get', 'JURISDICT_NM'], ['get', 'NAME'], ['get', 'COUNTY']], placeName],
+        ['==', ['get', 'JURISDICT_NM'], placeName],
         '#f04a23',
         '#ffffff'
       ]);
 
       dashboardMap.setPaintProperty('dashboard-county-outline', 'line-width', [
         'case',
-        ['==', ['coalesce', ['get', 'JURISDICT_NM'], ['get', 'NAME'], ['get', 'COUNTY']], placeName],
+        ['==', ['get', 'JURISDICT_NM'], placeName],
         4,
         1.2
       ]);
@@ -385,17 +385,31 @@
     if (dashboardMap.getLayer('dashboard-city-outline')) {
       dashboardMap.setPaintProperty('dashboard-city-outline', 'line-color', [
         'case',
-        ['==', ['coalesce', ['get', 'CITY_DISSOLVE'], ['get', 'CITY'], ['get', 'NAME']], placeName],
+        ['==', ['get', 'CITY_DISSOLVE'], placeName],
         '#f04a23',
         '#ffffff'
       ]);
 
       dashboardMap.setPaintProperty('dashboard-city-outline', 'line-width', [
         'case',
-        ['==', ['coalesce', ['get', 'CITY_DISSOLVE'], ['get', 'CITY'], ['get', 'NAME']], placeName],
+        ['==', ['get', 'CITY_DISSOLVE'], placeName],
         3,
         0.9
       ]);
+    }
+  }
+
+  function clearBoundaryHighlight() {
+    if (!dashboardMap) return;
+
+    if (dashboardMap.getLayer('dashboard-county-outline')) {
+      dashboardMap.setPaintProperty('dashboard-county-outline', 'line-color', '#ffffff');
+      dashboardMap.setPaintProperty('dashboard-county-outline', 'line-width', 1.2);
+    }
+
+    if (dashboardMap.getLayer('dashboard-city-outline')) {
+      dashboardMap.setPaintProperty('dashboard-city-outline', 'line-color', '#ffffff');
+      dashboardMap.setPaintProperty('dashboard-city-outline', 'line-width', 0.9);
     }
   }
 
@@ -408,8 +422,11 @@
     renderBarChart(incidentChart, countBy(filteredReports, 'incident_type'), 12);
     renderTimelineChart(filteredReports);
 
-    updateCountyChoropleth(filteredReports);
-    updateCityChoropleth(filteredReports);
+    // Important:
+    // The map should always use the full dataset,
+    // so other counties/cities do not become white after filtering.
+    updateCountyChoropleth(reports);
+    updateCityChoropleth(reports);
   }
 
   async function initializeMap() {
@@ -453,6 +470,11 @@
         zoom: washingtonZoom,
         speed: 0.9
       });
+
+      countyFilter.value = 'All';
+      cityFilter.value = 'All';
+      clearBoundaryHighlight();
+      updateDashboard();
     });
 
     dashboardMap.on('load', async () => {
@@ -622,15 +644,39 @@
       populateCityFilter(reports);
       cityFilter.value = 'All';
       locationLevelFilter.value = 'county';
+
       updateDashboard();
+
+      if (countyFilter.value !== 'All') {
+        highlightSelectedBoundary(countyFilter.value);
+      } else {
+        clearBoundaryHighlight();
+      }
     });
 
     impactFilter.addEventListener('change', updateDashboard);
-    locationLevelFilter.addEventListener('change', updateDashboard);
+
+    locationLevelFilter.addEventListener('change', () => {
+      updateDashboard();
+
+      if (locationLevelFilter.value === 'county' && countyFilter.value !== 'All') {
+        highlightSelectedBoundary(countyFilter.value);
+      }
+
+      if (locationLevelFilter.value === 'city' && cityFilter.value !== 'All') {
+        highlightSelectedBoundary(cityFilter.value);
+      }
+    });
 
     cityFilter.addEventListener('change', () => {
       if (cityFilter.value !== 'All') {
         locationLevelFilter.value = 'city';
+        highlightSelectedBoundary(cityFilter.value);
+      } else if (countyFilter.value !== 'All') {
+        locationLevelFilter.value = 'county';
+        highlightSelectedBoundary(countyFilter.value);
+      } else {
+        clearBoundaryHighlight();
       }
 
       updateDashboard();

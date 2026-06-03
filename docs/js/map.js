@@ -325,12 +325,19 @@
           'interpolate',
           ['linear'],
           ['coalesce', ['get', 'report_count'], 0],
-          0, '#f6c98f',
-          5, '#f4b36b',
-          15, '#ef8a3a',
-          30, '#d94b27'
+          0, '#d8f3f0',
+          1, '#7bd6cf',
+          3, '#21a7a0',
+          5, '#f6a04d',
+          10, '#f04a23',
+          20, '#b8321a'
         ],
-        'fill-opacity': 0.34
+        'fill-opacity': [
+          'case',
+          ['>', ['coalesce', ['get', 'report_count'], 0], 0],
+          0.78,
+          0.42
+        ]
       }
     });
 
@@ -351,18 +358,15 @@
       source: 'wa-cities',
       minzoom: cityZoomThreshold,
       paint: {
-        'fill-color': [
+        'line-color': '#004b4e',
+        'line-width': [
           'interpolate',
           ['linear'],
-          ['coalesce', ['get', 'report_count'], 0],
-          0, '#fff7ec',
-          1, '#fdd49e',
-          3, '#fdbb84',
-          5, '#fc8d59',
-          10, '#e34a33',
-          20, '#b30000'
+          ['zoom'],
+          7.5, 1.2,
+          10, 2.2
         ],
-        'fill-opacity': 0.58
+        'line-opacity': 0.9
       }
     });
 

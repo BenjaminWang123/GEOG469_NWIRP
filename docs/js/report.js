@@ -110,28 +110,36 @@
 
       if (method === 'map-click') {
         if (incidentPanel) incidentPanel.classList.add('hidden-panel');
+
         if (selectedLocationText) {
-          selectedLocationText.textContent = 'Click a county on the map to begin reporting';
+          selectedLocationText.textContent = 'Zoom in and click a city polygon on the map to begin reporting.';
         }
-        alert('Click a Washington county on the map. The county will be filled automatically.');
+
+        alert('Zoom in and click a city on the map. The city and county will be filled automatically.');
       }
 
       if (method === 'county-input') {
         if (incidentPanel) incidentPanel.classList.remove('hidden-panel');
+
         if (selectedLocationText) {
-          selectedLocationText.textContent = countySelect.value || 'Choose a county from the dropdown';
+          selectedLocationText.textContent =
+            citySelect.value && countySelect.value
+              ? `${citySelect.value}, ${countySelect.value}`
+              : 'Choose a city from the dropdown';
         }
-        if (countySelect) countySelect.focus();
+
+        if (citySelect) citySelect.focus();
       }
 
       if (method === 'current-location') {
         if (incidentPanel) incidentPanel.classList.remove('hidden-panel');
+
         if (selectedLocationText) {
-          selectedLocationText.textContent = 'Finding your county from your general location...';
+          selectedLocationText.textContent = 'Finding your city or county from your general location...';
         }
 
         if (!navigator.geolocation) {
-          selectedLocationText.textContent = 'Geolocation is not supported by this browser. Please choose a county manually.';
+          selectedLocationText.textContent = 'Geolocation is not supported by this browser. Please choose a city manually.';
           return;
         }
 
@@ -140,18 +148,28 @@
             const lng = position.coords.longitude;
             const lat = position.coords.latitude;
 
+            if (window.findCityForPoint) {
+              const cityInfo = window.findCityForPoint(lng, lat);
+
+              if (cityInfo && window.updateSelectedCity) {
+                window.updateSelectedCity(cityInfo);
+                return;
+              }
+            }
+
             if (window.findCountyForPoint) {
               const county = window.findCountyForPoint(lng, lat);
 
-              if (county && window.updateSelectedCounty) {
-                window.updateSelectedCounty(county);
+              if (county && countySelect) {
+                countySelect.value = county;
+                selectedLocationText.textContent = `${county} detected. Please choose the closest city manually.`;
               } else {
-                selectedLocationText.textContent = 'Could not match your location to a Washington county. Please choose a county manually.';
+                selectedLocationText.textContent = 'Could not match your location. Please choose a city manually.';
               }
             }
           },
           () => {
-            selectedLocationText.textContent = 'Location permission was denied. Please choose a county manually.';
+            selectedLocationText.textContent = 'Location permission was denied. Please choose a city manually.';
           }
         );
       }
@@ -162,12 +180,11 @@
     countySelect.addEventListener('change', () => {
       const selectedCounty = countySelect.value;
 
-      if (window.updateSelectedCounty && selectedCounty) {
-        window.updateSelectedCounty(selectedCounty);
-      }
-
       if (selectedLocationText) {
-        selectedLocationText.textContent = selectedCounty || 'No county selected yet';
+        selectedLocationText.textContent =
+          citySelect.value && selectedCounty
+            ? `${citySelect.value}, ${selectedCounty}`
+            : selectedCounty || 'No city selected yet';
       }
 
       if (incidentPanel && selectedCounty) {
@@ -181,16 +198,15 @@
       const selectedOption = citySelect.options[citySelect.selectedIndex];
 
       const city = citySelect.value;
-      const county = selectedOption.dataset.county;
+      const county = selectedOption.dataset.county || countySelect.value;
 
       if (countySelect && county) {
         countySelect.value = county;
       }
 
       if (selectedLocationText) {
-        selectedLocationText.textContent = city && county
-          ? `${city}, ${county}`
-          : 'No city selected yet';
+        selectedLocationText.textContent =
+          city && county ? `${city}, ${county}` : 'No city selected yet';
       }
 
       if (incidentPanel && city) {
@@ -230,12 +246,13 @@
         submitButton.textContent = 'Submitting...';
 
         const imageUrl = await uploadImageIfSelected();
+        const selectedCityOption = citySelect.options[citySelect.selectedIndex];
 
         const report = {
           county: countySelect.value,
           city: citySelect.value,
-          city_lat: selectedCityOption.dataset.lat,
-          city_lng: selectedCityOption.dataset.lng,
+          city_lat: selectedCityOption.dataset.lat || null,
+          city_lng: selectedCityOption.dataset.lng || null,
           impact_area: impactArea,
           incident_type: selectedIncidentType,
           description: textareas[0] ? textareas[0].value : '',
@@ -261,8 +278,14 @@
         alert('Report submitted successfully. Thank you.');
         form.reset();
 
+        if (selectedImageName) selectedImageName.textContent = 'No image selected';
+        if (imagePreview) {
+          imagePreview.classList.add('hidden-panel');
+          imagePreview.src = '';
+        }
+
         if (selectedLocationText) {
-          selectedLocationText.textContent = 'No county selected yet';
+          selectedLocationText.textContent = 'No city selected yet';
         }
 
         if (incidentPanel) {

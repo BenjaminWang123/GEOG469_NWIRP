@@ -48,6 +48,9 @@
   const citySelect = document.getElementById('city-select');
   const incidentPanel = document.getElementById('incident-panel');
   const recenterButton = document.getElementById('recenter-map-btn');
+  const currentLocationCard = document.querySelector('[data-method="current-location"]');
+
+  let currentLocationMarker = null;
 
   if (recenterButton) {
     recenterButton.addEventListener('click', () => {
@@ -61,6 +64,7 @@
 
   function escapeHTML(value) {
     if (value === null || value === undefined) return '';
+
     return String(value)
       .replaceAll('&', '&amp;')
       .replaceAll('<', '&lt;')
@@ -71,12 +75,15 @@
 
   function normalizeCountyName(name) {
     if (!name) return '';
+
     const value = String(name).trim();
+
     return value.includes('County') ? value : `${value} County`;
   }
 
   function normalizeCityName(name) {
     if (!name) return '';
+
     return String(name).trim();
   }
 
@@ -118,6 +125,7 @@
 
     cityGeojson.features.forEach((feature) => {
       const city = normalizeCityName(getCityName(feature));
+
       if (!city) return;
 
       const centroid = turf.centroid(feature);
@@ -146,11 +154,13 @@
       .sort((a, b) => a.city.localeCompare(b.city))
       .forEach((item) => {
         const option = document.createElement('option');
+
         option.value = item.city;
         option.textContent = item.city;
         option.dataset.county = item.county || '';
         option.dataset.lat = item.city_lat || '';
         option.dataset.lng = item.city_lng || '';
+
         citySelect.appendChild(option);
       });
   }
@@ -215,6 +225,7 @@
 
   function zoomToCity(cityName) {
     const cityInfo = cityLookup[cityName];
+
     if (!cityInfo) return;
 
     map.flyTo({
@@ -226,11 +237,125 @@
     updateSelectedCity(cityInfo);
   }
 
+  function findNearestCity(lng, lat) {
+    if (!cityGeojson || !window.turf) return null;
+
+    const userPoint = turf.point([lng, lat]);
+
+    let nearestCity = null;
+    let shortestDistance = Infinity;
+
+    Object.values(cityLookup).forEach((item) => {
+      if (!Number.isFinite(item.city_lng) || !Number.isFinite(item.city_lat)) return;
+
+      const cityPoint = turf.point([item.city_lng, item.city_lat]);
+      const distance = turf.distance(userPoint, cityPoint, { units: 'miles' });
+
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        nearestCity = item;
+      }
+    });
+
+    return nearestCity;
+  }
+
+  function showCurrentLocationOnMap(lng, lat) {
+    if (currentLocationMarker) {
+      currentLocationMarker.remove();
+    }
+
+    currentLocationMarker = new maplibregl.Marker({
+      color: '#f04a23'
+    })
+      .setLngLat([lng, lat])
+      .setPopup(
+        new maplibregl.Popup().setHTML(
+          '<strong>Your approximate location</strong><br><small>Used only to estimate city/county.</small>'
+        )
+      )
+      .addTo(map);
+  }
+
+  function useCurrentLocation() {
+    if (!navigator.geolocation) {
+      if (selectedLocationText) {
+        selectedLocationText.textContent = 'Your browser does not support current location.';
+      }
+
+      return;
+    }
+
+    if (selectedLocationText) {
+      selectedLocationText.textContent = 'Detecting your approximate location...';
+    }
+
+    if (incidentPanel) {
+      incidentPanel.classList.remove('hidden-panel');
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        const county = findCountyForPoint(lng, lat);
+        const nearestCity = findNearestCity(lng, lat);
+
+        map.flyTo({
+          center: [lng, lat],
+          zoom: 10,
+          speed: 0.9
+        });
+
+        showCurrentLocationOnMap(lng, lat);
+
+        if (nearestCity) {
+          updateSelectedCity({
+            ...nearestCity,
+            county: county || nearestCity.county
+          });
+        } else if (county) {
+          if (countySelect) {
+            countySelect.value = county;
+          }
+
+          populateCityDropdown(county);
+
+          if (selectedLocationText) {
+            selectedLocationText.textContent = county;
+          }
+        } else if (selectedLocationText) {
+          selectedLocationText.textContent =
+            'Location detected, but it is outside the supported Washington city/county data.';
+        }
+      },
+      (error) => {
+        console.warn('Current location could not be detected:', error.message);
+
+        if (selectedLocationText) {
+          selectedLocationText.textContent =
+            'Location permission was denied or unavailable. Please click the map or select a city manually.';
+        }
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  }
+
+  if (currentLocationCard) {
+    currentLocationCard.addEventListener('click', useCurrentLocation);
+  }
+
   function countReportsByCity(rows) {
     const counts = {};
 
     rows.forEach((report) => {
       const city = normalizeCityName(report.city);
+
       if (!city) return;
 
       const lookup = cityLookup[city] || {};
@@ -446,5 +571,6 @@
   window.updateSelectedCity = updateSelectedCity;
   window.populateCityDropdown = populateCityDropdown;
   window.zoomToCity = zoomToCity;
+  window.useCurrentLocation = useCurrentLocation;
   window.reportMap = map;
 })();
